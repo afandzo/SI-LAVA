@@ -36,14 +36,8 @@
     if ($page == "data_pelanggan") {
       $menu2 = 'active';
     }
-    if ($page == "data_paket") {
-      $menu3 = 'active';
-    }
     if ($page == "transaksi") {
-      $menu4 = 'active';
-    }
-    if ($page == "riwayat_transaksi") {
-      $menu5 = 'active';
+      $menu3 = 'active';
     }
     ?>
     <div class="sidebar-menu">
@@ -64,25 +58,12 @@
         </li>
 
         <li class="sidebar-item <?= @$menu3 ?> ">
-          <a href="data_paket.php" class='sidebar-link'>
-            <i class="bi bi-basket3 "></i>
-            <span>Data Paket Cucian</span>
-          </a>
-        </li>
-
-        <li class="sidebar-item <?= @$menu4 ?> ">
           <a href="transaksi.php" class='sidebar-link'>
             <i class="bi bi-cash-stack"></i>
             <span>Transaksi</span>
           </a>
         </li>
 
-        <li class="sidebar-item <?= @$menu5 ?> ">
-          <a href="riwayat_transaksi.php" class='sidebar-link'>
-            <i class="bi bi-clock"></i>
-            <span>Riwayat Transaksi</span>
-          </a>
-        </li>
       </ul>
     </div>
     <div class="ps__rail-x" style="left: 0px; bottom: -1166px;">

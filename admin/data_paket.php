@@ -1,7 +1,7 @@
 <?php
 include "../db.php";
 include "../filelog.php";
-if (empty($_SESSION['loginkasir'])) {
+if (empty($_SESSION['loginadmin'])) {
   header("Location: ../index.php");
 }
 

@@ -1,7 +1,7 @@
 <?php
 include "../db.php";
 include "../filelog.php";
-if (empty($_SESSION['loginkasir'])) {
+if (empty($_SESSION['loginadmin'])) {
   header("Location: ../index.php");
 }
 $page = "riwayat_transaksi";
@@ -112,7 +112,7 @@ if (isset($_POST['simpan'])) {
 
   // Query Edit data
   // Cek sudah ada isinya tau belum,
-  $jumlahRow = mysqli_num_rows($execDetail);
+  $jumlahRow = mysqli_num_rows($execDetailTransaksi);
   $jumlahPaket = mysqli_num_rows($execPaket);
   foreach ($dataDetailTransaksi as $detail) {
     // Jika sudah, ganti isinya dengan yang baru
