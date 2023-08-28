@@ -39,6 +39,9 @@
     if ($page == "transaksi") {
       $menu3 = 'active';
     }
+    if ($page == "riwayat_transaksi") {
+      $menu4 = 'active';
+    }
     ?>
     <div class="sidebar-menu">
       <ul class="menu">
@@ -61,6 +64,13 @@
           <a href="transaksi.php" class='sidebar-link'>
             <i class="bi bi-cash-stack"></i>
             <span>Transaksi</span>
+          </a>
+        </li>
+
+        <li class="sidebar-item <?= @$menu4 ?> ">
+          <a href="riwayat_transaksi.php" class='sidebar-link'>
+            <i class="bi bi-clock"></i>
+            <span>Riwayat Transaksi</span>
           </a>
         </li>
 
