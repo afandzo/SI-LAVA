@@ -4,12 +4,8 @@ include "../filelog.php";
 if (empty($_SESSION['loginkasir'])) {
   header("Location: ../index.php");
 }
-
 $page = "dashboard";
-
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,8 +17,6 @@ $page = "dashboard";
   <link rel="stylesheet" href="../assets/css/main/app-dark.css">
   <link rel="shortcut icon" href="../assets/images/logo/favicon.svg" type="image/x-icon">
   <link rel="shortcut icon" href="../assets/images/logo/favicon.png" type="image/png">
-
-
   <link rel="stylesheet" href="../assets/css/shared/iconly.css">
   <title>Dashboard</title>
 </head>
@@ -31,45 +25,54 @@ $page = "dashboard";
   <div id="app">
     <?php include "sidebar.php" ?>
   </div>
-
-
   <div id="main">
-    <div class="page-heading">
-      <div class="page-title">
-        <div class="row">
-          <section class="section">
-            <div class="container-fluid">
-              <div class="row">
-                <div class="col-12">
-                  <div class="card">
-                    <div class="card-header">
-                      <h4>Halaman Hak Akses Kasir</h4>
-                      <hr>
-                      <h4 class="fs-5">Sistem Informasi Manajemen Laundry</h4>
-                    </div>
-                    <div class="card-body">
-                      <div class="col-md-10">
-                        <p class="fs-4">Merupakan sebuah sistem yang digunakan untuk mengelola data kebutuhan Laundry mulai dari pemesanan, status, data penjualan, data kasir, data pengguna, dan laporan transaksi.</p>
-                      </div>
-                    </div>
+    <div class="page-content">
+      <section class="row">
+        <div class="col-12 col-lg-9">
+          <div class="row">
+            <div class="col-md-4 col-12">
+              <div class="card">
+                <div class="card-body px-4 py-4-5" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                  <div class="row">
+                    <a href="data_pelanggan.php" class="btn btn-lg btn-primary" style="font-size: 30px;"><i class="bi bi-people-fill"></i></a>
+                  </div>
+                  <div class="row" style="margin-top: 10px;">
+                    <span style="font-size: 20px;">Data Pelanggan</span>
                   </div>
                 </div>
               </div>
             </div>
-          </section>
+            <div class="col-md-4 col-12">
+              <div class="card">
+                <div class="card-body px-4 py-4-5" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                  <div class="row">
+                    <a href="transaksi.php" class="btn btn-lg btn-success" style="font-size: 30px;"><i class="bi bi-cart-plus-fill"></i></a>
+                  </div>
+                  <div class="row" style="margin-top: 10px;">
+                    <span style="font-size: 20px;">Data Transaksi</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-12">
+              <div class="card">
+                <div class="card-body px-4 py-4-5" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                  <div class="row">
+                    <a href="riwayat_transaksi.php" class="btn btn-lg btn-secondary" style="font-size: 30px;"><i class="bi bi-clock-history"></i></a>
+                  </div>
+                  <div class="row" style="margin-top: 10px;">
+                    <span style="font-size: 20px;">Riwayat Transaksi</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
-
-
-
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
-
-  <!-- Need: Apexcharts -->
-  <script src="../assets/extensions/apexcharts/apexcharts.min.js"></script>
-  <script src="../assets/js/pages/dashboard.js"></script>
 </body>
 
 </html>

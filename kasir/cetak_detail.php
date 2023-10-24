@@ -4,40 +4,30 @@ include "../filelog.php";
 if (empty($_SESSION['loginkasir'])) {
   header("Location: ../index.php");
 }
-
-// $page = "riwayat_transaksi";
-
 //ambil semua data pelanggan
 $querySemuaPelanggan = "SELECT * FROM tb_pelanggan";
 $execSemuaPelanggan = mysqli_query($conn, $querySemuaPelanggan);
 $dataSemuaPelanggan = mysqli_fetch_all($execSemuaPelanggan, MYSQLI_ASSOC);
-// var_dump($dataSemuaPelanggan);
-
 //ambil data transaksi
 $kode = $_GET['kode'];
 $idTransaksi = $_GET['idtransaksi'];
 $queryTransaksi = "SELECT * FROM tb_transaksi WHERE id = $idTransaksi";
 $execTransaksi = mysqli_query($conn, $queryTransaksi);
 $dataTransaksi = mysqli_fetch_assoc($execTransaksi);
-
 //ambil data pelanggan
 $idPelanggan = $dataTransaksi['id_pelanggan'];
 $querypelanggan = "SELECT * FROM tb_pelanggan WHERE id = $idPelanggan";
 $execPelanggan = mysqli_query($conn, $querypelanggan);
 $dataPelanggan = mysqli_fetch_assoc($execPelanggan);
-
 //ambil data detail
 $queryDetailTransaksi = "SELECT * FROM tb_detail_transaksi WHERE id_transaksi = $idTransaksi";
 $execDetailTransaksi = mysqli_query($conn, $queryDetailTransaksi);
 $dataDetailTransaksi = mysqli_fetch_all($execDetailTransaksi, MYSQLI_ASSOC);
-
 //ambil data paket
 $queryPaket = "SELECT * FROM tb_paket";
 $execPaket = mysqli_query($conn, $queryPaket);
 $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -113,11 +103,7 @@ $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
               </table>
             </div>
           </div>
-          <div class="col-sm-8">
-
-          </div>
         </div>
-        <!--rows -->
         <div>
           <div class="col-sm-12">
             <table class="table table-bordered">
@@ -178,7 +164,6 @@ $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
                 $hargaA += $total[$i];
               }
               ?>
-
               <h3>Total Bayar : Rp. <?= $hargaA ?></h3>
             </span>
           </div>
@@ -188,10 +173,6 @@ $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
   </div>
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
-
-  <!-- Need: Apexcharts -->
-  <script src="../assets/extensions/apexcharts/apexcharts.min.js"></script>
-  <script src="../assets/js/pages/dashboard.js"></script>
 </body>
 
 </html>

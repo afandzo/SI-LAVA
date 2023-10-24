@@ -1,13 +1,10 @@
 <?php
 include "../db.php";
 include "../filelog.php";
-
 if (empty($_SESSION['loginadmin'])) {
   header("Location: ../index.php");
 }
-
 $page = "data_pelanggan";
-
 $queryPelanggan = "SELECT * FROM tb_pelanggan";
 $execPelanggan = mysqli_query($conn, $queryPelanggan);
 $dataPelanggan = mysqli_fetch_all($execPelanggan, MYSQLI_ASSOC);
@@ -83,7 +80,6 @@ if (isset($_POST['simpan'])) {
   <link rel="shortcut icon" href="../assets/images/logo/favicon.png" type="image/png">
   <link rel="stylesheet" href="../assets/extensions/simple-datatables/style.css">
   <link rel="stylesheet" href="../assets/css/pages/simple-datatables.css">
-
   <title>Data Pelanggan</title>
 </head>
 
@@ -92,12 +88,10 @@ if (isset($_POST['simpan'])) {
     <?php include "sidebar.php" ?>
   </div>
 
-  <!-- Table head options start -->
   <div id="main">
     <div class="page-heading">
       <div class="page-title">
         <div class="row">
-          <!-- <div class="col-12 col-md-6 order-md-1 order-last"> -->
           <section class="section">
             <div class="row" id="table-head">
               <div class="col-12">
@@ -106,7 +100,6 @@ if (isset($_POST['simpan'])) {
                     <h4 class="card-title">Daftar Pelanggan</h4>
                   </div>
                   <div class="card-content">
-                    <!-- table head dark -->
                     <div class="table-responsive">
                       <table class="table mb-3" id="table1">
                         <thead class="thead-dark">
@@ -161,7 +154,6 @@ if (isset($_POST['simpan'])) {
                                           <div class=" form-group">
                                             <select class="form-select" id="basicSelect" name="jenis_kelamin">
                                               <option value="<?= $pelanggan['jenis_kelamin'] ?>"><?= $pelanggan['jenis_kelamin'] ?></option>
-                                              <!-- <option value="kasir">Kasir</option> -->
                                             </select>
                                           </div>
                                           <label>No. Tlp: </label>
@@ -184,15 +176,9 @@ if (isset($_POST['simpan'])) {
                                     </div>
                                   </div>
                                 </div>
-                                <!-- <a href="?delete=<?php //echo $pelanggan['id'] 
-                                                      ?>" class="btn icon icon-left btn-danger"><i class="bi bi-x"></i>
-                                  DELETE</a> -->
-
                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#defaultSize<?= $pelanggan['id'] ?>">
                                   <i class="bi bi-trash"></i>
                                 </button>
-
-                                <!--Default size Modal -->
                                 <div class="modal fade text-left" id="defaultSize<?= $pelanggan['id'] ?>" tabindex="-1" aria-labelledby="myModalLabel18" aria-hidden="true" style="display: none;">
                                   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
                                     <div class="modal-content">
@@ -280,7 +266,6 @@ if (isset($_POST['simpan'])) {
                               </button>
                             </div>
                           </form>
-
                         </div>
                       </div>
                     </div>
@@ -289,23 +274,15 @@ if (isset($_POST['simpan'])) {
               </div>
             </div>
           </section>
-          <!--login form Modal -->
-
-
         </div>
-        <!-- </div> -->
       </div>
     </div>
   </div>
-
-
-  <!-- Form and scrolling Components start -->
 
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
   <script src="../assets/extensions/simple-datatables/umd/simple-datatables.js"></script>
   <script src="../assets/js/pages/simple-datatables.js"></script>
-
 </body>
 
 </html>

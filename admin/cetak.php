@@ -3,11 +3,7 @@ if (!isset($_SESSION['loginadmin'])) {
   header("location: ../index.php");
   exit;
 }
-
-
-
 // Cari
-
 $awal = $_GET["awal"];
 $akhir = $_GET["akhir"];
 // var_dump($awal, $akhir);
@@ -30,7 +26,6 @@ foreach ($semuaId as $id) {
 }
 $coba = true;
 // var_dump($listQuery);
-
 ?>
 
 <!DOCTYPE html>
@@ -45,8 +40,6 @@ $coba = true;
   <link rel="shortcut icon" href="../assets/images/logo/favicon.png" type="image/png">
   <link rel="stylesheet" href="../assets/css/main/app.css">
   <link rel="stylesheet" href="../assets/css/pages/auth.css">
-
-
   <link rel="stylesheet" href="../assets/css/shared/iconly.css">
   <title>Cetak Laporan</title>
 </head>
@@ -67,7 +60,6 @@ $coba = true;
         </div>
       </div>
       <div class="card-body">
-        <!--rows -->
         <div class="row mb-3">
           <div class="col-12">
             <div class="card p-4">
@@ -110,7 +102,6 @@ $coba = true;
                         $beratPaket[] += $paket['qty'];
                         $semuaPaket[] += $paket['id_paket'];
                       }
-                      // var_dump($semuaPaket, $beratPaket);
                       $c = 0;
                       foreach ($dataPaket as $hrg) {
                         if ($hrg['id_paket'] == $semuaPaket[$c] && $hrg['id_transaksi'] == $idTransaksi) {
@@ -157,29 +148,16 @@ $coba = true;
                       <td colspan="5">Total</td>
                       <td>Rp. <?= $totalHarga ?></td>
                     </tr>
-
                   </table>
                 </div>
               </div>
-              <!-- <div class="card-footer d-flex justify-content-between">
-                <a href="cetak.php?awal=<?= $awal ?>&akhir=<?= $akhir ?>"><button class="btn btn-danger" type="button">PRINT</button></a>
-              </div> -->
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-
-
-
-
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
-
-  <!-- Need: Apexcharts -->
-  <script src="../assets/extensions/apexcharts/apexcharts.min.js"></script>
-  <script src="../assets/js/pages/dashboard.js"></script>
 </body>
-
 </html>

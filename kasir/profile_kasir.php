@@ -4,9 +4,7 @@ include "../filelog.php";
 if (empty($_SESSION['loginkasir'])) {
   header("Location: ../index.php");
 }
-
 $page = "dashboard";
-
 if (isset($_POST['edit'])) {
   $id = $_POST['id'];
   $nama = $_POST['nama'];
@@ -22,7 +20,6 @@ if (isset($_POST['edit'])) {
   }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -41,15 +38,12 @@ if (isset($_POST['edit'])) {
   <div id="app">
     <?php include "sidebar.php"; ?>
     <div id="main">
-
-
       <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
           <h6 class="m-0 font-weight-bold text-primary">Profil Pengguna</h6>
         </div>
         <!-- Card Body -->
         <div class="card-body">
-          <!-- <img class="card-img-top" src="../assets/images/faces/3.jpg" alt="Card image"> -->
           <table class="table">
             <tbody>
               <tr>
@@ -111,7 +105,6 @@ if (isset($_POST['edit'])) {
                     <div class=" form-group">
                       <select class="form-select" id="basicSelect" name="role">
                         <option value="<?= $dataUserProfile['role'] ?>"><?= $dataUserProfile['role'] ?></option>
-                        <!-- <option value="kasir">Kasir</option> -->
                       </select>
                     </div>
                   </div>
@@ -132,14 +125,9 @@ if (isset($_POST['edit'])) {
           </div>
         </div>
       </div>
-
     </div>
     <script src="../assets/js/bootstrap.js"></script>
     <script src="../assets/js/app.js"></script>
-
-
-
-
 </body>
 
 </html>

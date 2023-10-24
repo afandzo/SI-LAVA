@@ -5,36 +5,29 @@ if (empty($_SESSION['loginkasir'])) {
   header("Location: ../index.php");
 }
 $page = "riwayat_transaksi";
-
 //ambil semua data pelanggan
 $querySemuaPelanggan = "SELECT * FROM tb_pelanggan";
 $execSemuaPelanggan = mysqli_query($conn, $querySemuaPelanggan);
 $dataSemuaPelanggan = mysqli_fetch_all($execSemuaPelanggan, MYSQLI_ASSOC);
-// var_dump($dataSemuaPelanggan);
-
 //ambil data transaksi
 $kode = $_GET['kode'];
 $idTransaksi = $_GET['idtransaksi'];
 $queryTransaksi = "SELECT * FROM tb_transaksi WHERE id = $idTransaksi";
 $execTransaksi = mysqli_query($conn, $queryTransaksi);
 $dataTransaksi = mysqli_fetch_assoc($execTransaksi);
-
 //ambil data pelanggan
 $idPelanggan = $dataTransaksi['id_pelanggan'];
 $querypelanggan = "SELECT * FROM tb_pelanggan WHERE id = $idPelanggan";
 $execPelanggan = mysqli_query($conn, $querypelanggan);
 $dataPelanggan = mysqli_fetch_assoc($execPelanggan);
-
 //ambil data detail
 $queryDetailTransaksi = "SELECT * FROM tb_detail_transaksi WHERE id_transaksi = $idTransaksi";
 $execDetailTransaksi = mysqli_query($conn, $queryDetailTransaksi);
 $dataDetailTransaksi = mysqli_fetch_all($execDetailTransaksi, MYSQLI_ASSOC);
-
 //ambil data paket
 $queryPaket = "SELECT * FROM tb_paket";
 $execPaket = mysqli_query($conn, $queryPaket);
 $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
-
 if ((!isset($_GET['idtransaksi']) || !isset($_GET['kode'])) || ($kode !== $dataTransaksi['kode_invoice'] || $idTransaksi !== $dataTransaksi['id'])) {
   header("Location: riwayat_transaksi.php");
   exit;
@@ -42,46 +35,31 @@ if ((!isset($_GET['idtransaksi']) || !isset($_GET['kode'])) || ($kode !== $dataT
 
 if ($dataTransaksi['dibayar'] == 'belum_dibayar') {
   $bayarBadge = "badge bg-danger";
-}
-if ($dataTransaksi['dibayar'] == 'dibayar') {
+} if ($dataTransaksi['dibayar'] == 'dibayar') {
   $bayarBadge  = "badge bg-success";
-}
-if ($dataTransaksi['status'] == 'baru') {
+} if ($dataTransaksi['status'] == 'baru') {
   $statusBadge  = "badge bg-secondary";
-}
-if ($dataTransaksi['status'] == 'proses') {
+} if ($dataTransaksi['status'] == 'proses') {
   $statusBadge  = "badge bg-info";
-}
-if ($dataTransaksi['status'] == 'selesai') {
+} if ($dataTransaksi['status'] == 'selesai') {
   $statusBadge  = "badge bg-primary";
-}
-if ($dataTransaksi['status'] == 'diambil') {
+} if ($dataTransaksi['status'] == 'diambil') {
   $statusBadge  = "badge bg-success";
 }
 
 if ($dataTransaksi['dibayar'] == 'belum_dibayar') {
   $bayar = "Belum Dibayar";
-}
-if ($dataTransaksi['dibayar'] == 'dibayar') {
+} if ($dataTransaksi['dibayar'] == 'dibayar') {
   $bayar  = "Dibayar";
-}
-if ($dataTransaksi['status'] == 'baru') {
+} if ($dataTransaksi['status'] == 'baru') {
   $status  = "Baru";
-}
-if ($dataTransaksi['status'] == 'proses') {
+} if ($dataTransaksi['status'] == 'proses') {
   $status  = "Proses";
-}
-if ($dataTransaksi['status'] == 'selesai') {
+} if ($dataTransaksi['status'] == 'selesai') {
   $status  = "Selesai";
-}
-if ($dataTransaksi['status'] == 'diambil') {
+} if ($dataTransaksi['status'] == 'diambil') {
   $status  = "Diambil";
 }
-
-
-
-
-
 // Edit detail transaksi
 if (isset($_POST['simpan'])) {
   // Ubah data tb transaksi
@@ -96,8 +74,6 @@ if (isset($_POST['simpan'])) {
   }
   $queryEditData = "UPDATE `tb_transaksi` SET `id_pelanggan` = '$pelanggan', `tgl` = '$tgl', `batas_waktu` = '$batastgl', `tgl_bayar` = '$tglbayar', `status` = '$status', `dibayar` = '$status_bayar' WHERE `tb_transaksi`.`id` = $idTransaksi;";
   $execEditData = mysqli_query($conn, $queryEditData);
-
-
   // Ubah data tb detail transaksi
   $jumlahPaketDipesan = [];
   $kuan = [];
@@ -109,8 +85,6 @@ if (isset($_POST['simpan'])) {
       }
     }
   }
-
-  // Query Edit data
   // Cek sudah ada isinya tau belum,
   $jumlahRow = mysqli_num_rows($execDetailTransaksi);
   $jumlahPaket = mysqli_num_rows($execPaket);
@@ -156,7 +130,6 @@ if (isset($_POST['simpan'])) {
     header("location: detail.php?idtransaksi=$idTransaksi&kode=$kode");
   }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -174,7 +147,6 @@ if (isset($_POST['simpan'])) {
       @page {
         size: landscape;
       }
-
       #sidebar {
         display: none;
       }
@@ -210,7 +182,6 @@ if (isset($_POST['simpan'])) {
                   <div class="card-content">
                     <div class="card-body">
                       <div class="card-body">
-                        <!--rows -->
                         <div class="row">
                           <div class="col-sm-5">
                             <div class="form-group">
@@ -242,10 +213,8 @@ if (isset($_POST['simpan'])) {
                             </div>
                           </div>
                           <div class="col-sm-8">
-
                           </div>
                         </div>
-                        <!--rows -->
                         <div>
                           <div class="col-sm-12">
                             <table class="table table-bordered">
@@ -285,16 +254,10 @@ if (isset($_POST['simpan'])) {
                               </tbody>
                             </table>
                           </div>
-
                           <?php include "modal_edit_detail.php"; ?>
-
                           <!-- Tombol cetak invoice -->
                           <a href="cetak_detail.php?idtransaksi=<?= $idTransaksi ?>&kode=<?= $kode ?>"><button class="btn btn-danger" type="button">Cetak Invoice</button></a>
-                          <!-- <a href="page/transaksi/cetak/cetak-transaksi.php?no_invoice=" target="blank" class="btn btn-primary btn-icon-split"><span class="text"><i class="fas fa-print"></i> Cetak Invoice</span></a>
-                          <a href="page/transaksi/cetak/cetak-thermal.php?no_invoice=" target="blank" class="btn btn-success btn-icon-split"><span class="text"><i class="fas fa-print"></i> Printer Thermal</span></a>
-                          <a href="page/transaksi/cetak/pdf/detail-transaksi-pdf.php?no_invoice=" target="blank" class="btn btn-danger btn-icon-pdf"><span class="text"><i class="fas fa-file-pdf"></i> Export PDF</span></a> -->
                         </div>
-                        <!--rows -->
                       </div>
                     </div>
                   </div>
@@ -306,13 +269,8 @@ if (isset($_POST['simpan'])) {
       </div>
     </div>
   </div>
-
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
-
-  <!-- Need: Apexcharts -->
-  <script src="../assets/extensions/apexcharts/apexcharts.min.js"></script>
-  <script src="../assets/js/pages/dashboard.js"></script>
 </body>
 
 </html>

@@ -4,17 +4,11 @@ include "../filelog.php";
 if (empty($_SESSION['loginkasir'])) {
   header("Location: ../index.php");
 }
-
-
 $page = "riwayat_transaksi";
-
-
-
 //ambil data transaksi
 $queryTransaksi = "SELECT * FROM tb_transaksi";
 $execTransaksi = mysqli_query($conn, $queryTransaksi);
 $dataTransaksi = mysqli_fetch_all($execTransaksi, MYSQLI_ASSOC);
-
 //ambil data detail transaksi
 $queryDetailTransaksi = "SELECT * FROM tb_detail_transaksi";
 $execDetailTransaksi = mysqli_query($conn, $queryDetailTransaksi);
@@ -23,7 +17,6 @@ $dataDetailTransaksi = mysqli_fetch_all($execDetailTransaksi, MYSQLI_ASSOC);
 $querryPaket = "SELECT * FROM tb_paket";
 $execPaket = mysqli_query($conn, $querryPaket);
 $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
-
 if (isset($_POST['hps'])) {
   $id = $_POST['idhapus'];
   $queryHapusData = "DELETE FROM tb_detail_transaksi WHERE id_transaksi = $id";
@@ -48,7 +41,6 @@ if (isset($_POST['hps'])) {
   <link rel="shortcut icon" href="../assets/images/logo/favicon.png" type="image/png">
   <link rel="stylesheet" href="../assets/extensions/simple-datatables/style.css">
   <link rel="stylesheet" href="../assets/css/pages/simple-datatables.css">
-
   <title>Riwayat Transaksi</title>
 </head>
 
@@ -56,13 +48,10 @@ if (isset($_POST['hps'])) {
   <div id="app">
     <?php include "sidebar.php" ?>
   </div>
-
-  <!-- Table head options start -->
   <div id="main">
     <div class="page-heading">
       <div class="page-title">
         <div class="row">
-          <!-- <div class="col-12 col-md-6 order-md-1 order-last"> -->
           <section class="section">
             <div class="row" id="table-head">
               <div class="col-12">
@@ -71,7 +60,6 @@ if (isset($_POST['hps'])) {
                     <h4 class="card-title">Daftar Paket</h4>
                   </div>
                   <div class="card-content">
-                    <!-- table head dark -->
                     <div class="table-responsive">
                       <table class="table mb-3" id="table1">
                         <thead class="thead-dark">
@@ -93,20 +81,15 @@ if (isset($_POST['hps'])) {
                             <?php
                             if ($transaksi['dibayar'] == 'belum_dibayar') {
                               $bayar = "Belum Dibayar";
-                            }
-                            if ($transaksi['dibayar'] == 'dibayar') {
+                            } if ($transaksi['dibayar'] == 'dibayar') {
                               $bayar  = "Dibayar";
-                            }
-                            if ($transaksi['status'] == 'baru') {
+                            } if ($transaksi['status'] == 'baru') {
                               $status  = "Baru";
-                            }
-                            if ($transaksi['status'] == 'proses') {
+                            } if ($transaksi['status'] == 'proses') {
                               $status  = "Proses";
-                            }
-                            if ($transaksi['status'] == 'selesai') {
+                            } if ($transaksi['status'] == 'selesai') {
                               $status  = "Selesai";
-                            }
-                            if ($transaksi['status'] == 'diambil') {
+                            } if ($transaksi['status'] == 'diambil') {
                               $status  = "Diambil";
                             }
                             ?>
@@ -155,13 +138,9 @@ if (isset($_POST['hps'])) {
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                                   </svg></a>
-                                <!-- <a href="?delete=<? ?>" class="btn icon icon-left btn-danger"><i class="bi bi-x"></i>
-                                </a> -->
                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#defaultSize<?= $transaksi['id'] ?>">
                                   <i class="bi bi-trash"></i>
                                 </button>
-
-                                <!--Default size Modal -->
                                 <div class="modal fade text-left" id="defaultSize<?= $transaksi['id'] ?>" tabindex="-1" aria-labelledby="myModalLabel18" aria-hidden="true" style="display: none;">
                                   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
                                     <div class="modal-content">
@@ -200,33 +179,22 @@ if (isset($_POST['hps'])) {
                       </table>
                     </div>
                   </div>
-
                   <div class="card-footer d-flex justify-content-between">
                     <a href="transaksi.php" class="btn icon icon-left btn-success"><i class="bi bi-person-plus-fill"></i>
                       TAMBAH</a>
-                    <!-- ====MODAL TAMBAH==== -->
                   </div>
                 </div>
               </div>
             </div>
           </section>
-          <!--login form Modal -->
-
-
         </div>
-        <!-- </div> -->
       </div>
     </div>
   </div>
-
-
-  <!-- Form and scrolling Components start -->
-
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
   <script src="../assets/extensions/simple-datatables/umd/simple-datatables.js"></script>
   <script src="../assets/js/pages/simple-datatables.js"></script>
-
 </body>
 
 </html>

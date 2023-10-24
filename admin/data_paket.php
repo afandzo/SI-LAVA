@@ -4,13 +4,11 @@ include "../filelog.php";
 if (empty($_SESSION['loginadmin'])) {
   header("Location: ../index.php");
 }
-
 $page = "data_paket";
 
 $queryPaket = "SELECT * FROM tb_paket";
 $execPaket = mysqli_query($conn, $queryPaket);
 $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
-// var_dump($dataPaket);
 if (isset($_GET['delete'])) {
   $id = $_GET['delete'];
   $queryDeletePaket = "DELETE FROM tb_paket WHERE `tb_paket`.`id` = $id";
@@ -43,9 +41,7 @@ if (isset($_POST['simpan'])) {
   $paket = $_POST['nama_paket'];
   $harga = $_POST['harga'];
   $insert = "INSERT INTO `tb_paket` (`id`, `jenis`, `nama_paket`, `harga`) VALUES (NULL, '$jenis', '$paket', '$harga');";
-  // var_dump($kode);
   $sql = mysqli_query($conn, $insert);
-  // var_dump($dataTambah);
   if ($sql) {
     $log = $_SESSION['nama'] . "  " . "(" . $_SESSION['role'] . ")" . "  " . "Telah Menambahkan paket. Dengan nama paket '" . $paket . "', dan dengan jenis '" . $jenis . "' . Pada Data Paket Cucian.";
     logger($log, "../../../../../");
@@ -66,7 +62,6 @@ if (isset($_POST['simpan'])) {
   <link rel="shortcut icon" href="../assets/images/logo/favicon.png" type="image/png">
   <link rel="stylesheet" href="../assets/extensions/simple-datatables/style.css">
   <link rel="stylesheet" href="../assets/css/pages/simple-datatables.css">
-
   <title>Cetak Data Paket</title>
 </head>
 
@@ -75,12 +70,10 @@ if (isset($_POST['simpan'])) {
     <?php include "sidebar.php" ?>
   </div>
 
-  <!-- Table head options start -->
   <div id="main">
     <div class="page-heading">
       <div class="page-title">
         <div class="row">
-          <!-- <div class="col-12 col-md-6 order-md-1 order-last"> -->
           <section class="section">
             <div class="row" id="table-head">
               <div class="col-12">
@@ -89,7 +82,6 @@ if (isset($_POST['simpan'])) {
                     <h4 class="card-title">Daftar Paket</h4>
                   </div>
                   <div class="card-content">
-                    <!-- table head dark -->
                     <div class="table-responsive">
                       <table class="table mb-3" id="table1">
                         <thead class="thead-dark">
@@ -127,7 +119,6 @@ if (isset($_POST['simpan'])) {
                                           <i data-feather="x"></i>
                                         </button>
                                       </div>
-
                                       <form action="" method="post">
                                         <div class="modal-body">
                                           <label>Jenis Paket : </label>
@@ -170,7 +161,6 @@ if (isset($_POST['simpan'])) {
                       </table>
                     </div>
                   </div>
-
                   <div class="card-footer d-flex justify-content-between">
                     <a href="../register.php" class="btn icon icon-left btn-success" data-bs-toggle="modal" data-bs-target="#default"><i class="bi bi-person-plus-fill"></i>
                       TAMBAH</a>
@@ -184,7 +174,6 @@ if (isset($_POST['simpan'])) {
                               <i data-feather="x"></i>
                             </button>
                           </div>
-
                           <form action="" method="post">
                             <div class="modal-body">
                               <label>Jenis Paket : </label>
@@ -212,13 +201,11 @@ if (isset($_POST['simpan'])) {
                                 <span class="d-none d-sm-block">Close</span>
                               </button>
                               <button type="submit" class="btn btn-primary ml-1" data-bs-dismiss="modal" name="simpan" value="SIMPAN DATA">
-                                <!-- <input type="text" class="visually-hidden" value="" name="id"> -->
                                 <i class="bx bx-check d-block d-sm-none"></i>
                                 <span class="d-none d-sm-block">Simpan</span>
                               </button>
                             </div>
                           </form>
-
                         </div>
                       </div>
                     </div>
@@ -227,23 +214,15 @@ if (isset($_POST['simpan'])) {
               </div>
             </div>
           </section>
-          <!--login form Modal -->
-
-
         </div>
-        <!-- </div> -->
       </div>
     </div>
   </div>
-
-
-  <!-- Form and scrolling Components start -->
 
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
   <script src="../assets/extensions/simple-datatables/umd/simple-datatables.js"></script>
   <script src="../assets/js/pages/simple-datatables.js"></script>
-
 </body>
 
 </html>

@@ -1,17 +1,13 @@
 <?php
 include "../db.php";
 include "../filelog.php";
-
 $page = "data_kasir";
-
 if (empty($_SESSION['loginadmin'])) {
   header("Location: ../index.php");
 }
 $queryUser = "SELECT * FROM user";
 $execUser = mysqli_query($conn, $queryUser);
 $dataUser = mysqli_fetch_all($execUser, MYSQLI_ASSOC);
-// var_dump($dataUser);
-// SESSION
 if (isset($_GET['delete'])) {
   $id = $_GET['delete'];
   $queryDeleteUser = "DELETE FROM user WHERE `user`.`id` = $id";
@@ -75,13 +71,10 @@ if (isset($_POST['simpan'])) {
   <div id="app">
     <?php include "sidebar.php" ?>
   </div>
-
-  <!-- Table head options start -->
   <div id="main">
     <div class="page-heading">
       <div class="page-title">
         <div class="row">
-          <!-- <div class="col-12 col-md-6 order-md-1 order-last"> -->
           <section class="section">
             <div class="row" id="table-head">
               <div class="col-12">
@@ -90,7 +83,6 @@ if (isset($_POST['simpan'])) {
                     <h4 class="card-title">Daftar Anggota</h4>
                   </div>
                   <div class="card-content">
-                    <!-- table head dark -->
                     <div class="table-responsive">
                       <table class="table  mb-3" id="table1">
                         <thead class="thead-dark">
@@ -235,17 +227,10 @@ if (isset($_POST['simpan'])) {
               </div>
             </div>
           </section>
-          <!--login form Modal -->
-
-
         </div>
-        <!-- </div> -->
       </div>
     </div>
   </div>
-
-
-  <!-- Form and scrolling Components start -->
 
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>

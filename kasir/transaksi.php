@@ -4,19 +4,15 @@ include "../filelog.php";
 if (empty($_SESSION['loginkasir'])) {
   header("Location: ../index.php");
 }
-
 $page = "transaksi";
-
 //ambil data transaksi
 $queryTransaksi = "SELECT * FROM tb_transaksi";
 $execTransaksi = mysqli_query($conn, $queryTransaksi);
 $dataTransaksi = mysqli_fetch_all($execTransaksi, MYSQLI_ASSOC);
-
 //ambil data pelanggan
 $querypelanggan = "SELECT * FROM tb_pelanggan";
 $execPelanggan = mysqli_query($conn, $querypelanggan);
 $dataPelanggan = mysqli_fetch_all($execPelanggan, MYSQLI_ASSOC);
-
 // Ambil data paket
 $queryPaket = "SELECT * FROM tb_paket";
 $execPaket = mysqli_query($conn, $queryPaket);
@@ -32,7 +28,6 @@ foreach ($dataPaket as $paket) {
   $semuaId[] += $paket['id'];
 }
 // var_dump($semuaId);
-
 $muatan = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 $random = "INV-" . substr(str_shuffle($muatan), 0, 7);
 if (isset($_POST['simpan'])) {
@@ -69,12 +64,22 @@ if (isset($_POST['simpan'])) {
       }
     }
     if ($execTambah) {
-      echo "
-      <script>
-      alert('Transaksi Berhasil');        
-      </script>
-      ";
-      // header("location:transaksi.php");
+      echo "<script>alert('Transaksi Berhasil');</script>";
+
+      // Check if the customer has reached 10 transactions
+      $queryCountTransactions = "SELECT COUNT(*) AS total FROM tb_transaksi WHERE id_pelanggan = '$nama_pelanggan'";
+      $execCountTransactions = mysqli_query($conn, $queryCountTransactions);
+      $dataCountTransactions = mysqli_fetch_assoc($execCountTransactions);
+      $totalTransactions = $dataCountTransactions['total'];
+
+      if ($totalTransactions % 10 == 0) {
+        $customerQuery = "SELECT nama FROM tb_pelanggan WHERE id = '$nama_pelanggan'";
+        $customerResult = mysqli_query($conn, $customerQuery);
+        $customerData = mysqli_fetch_assoc($customerResult);
+        $customerName = $customerData['nama'];
+
+        echo "<script>alert('Selamat! Pelanggan " . $customerName . " mendapatkan hadiah.');</script>";
+    }
     } else {
       echo "
         <script>
@@ -84,8 +89,6 @@ if (isset($_POST['simpan'])) {
     }
   }
 }
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -105,7 +108,6 @@ if (isset($_POST['simpan'])) {
   <div id="app">
     <?php include "sidebar.php" ?>
   </div>
-
   <div id="main">
     <div class="page-heading">
       <div class="page-title">
@@ -132,8 +134,8 @@ if (isset($_POST['simpan'])) {
                           <div class="col-md-6 col-12">
                             <div class="form-group">
                               <label>Nama Pelanggan</label>
-                              <div class=" form-group">
-                                <select class="form-select" id="basicSelect" name="nama_plgn">
+                              <div class="form-group">
+                                <select class="form-select" id="nama_pelanggan" name="nama_plgn" onchange="hadiah()">
                                   <?php foreach ($dataPelanggan as $pelanggan) { ?>
                                     <option value="<?= $pelanggan['id'] ?>"><?= $pelanggan['nama'] ?></option>
                                   <?php } ?>
@@ -183,8 +185,6 @@ if (isset($_POST['simpan'])) {
                               </div>
                             </div>
                           </div>
-
-
                           <div class="col-12">
                             <div class="form-group">
                               <label for="">
@@ -262,10 +262,6 @@ if (isset($_POST['simpan'])) {
 
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
-
-  <!-- Need: Apexcharts -->
-  <script src="../assets/extensions/apexcharts/apexcharts.min.js"></script>
-  <script src="../assets/js/pages/dashboard.js"></script>
   <script>
     function hitung() {
       var tampil = document.getElementById('hasil_paket_akhir');

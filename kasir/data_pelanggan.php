@@ -1,13 +1,10 @@
 <?php
 include "../db.php";
-include "../filelog.php";
-
 if (empty($_SESSION['loginkasir'])) {
   header("Location: ../index.php");
 }
-
+include "../filelog.php";
 $page = "data_pelanggan";
-
 $queryPelanggan = "SELECT * FROM tb_pelanggan";
 $execPelanggan = mysqli_query($conn, $queryPelanggan);
 $dataPelanggan = mysqli_fetch_all($execPelanggan, MYSQLI_ASSOC);
@@ -91,13 +88,10 @@ if (isset($_POST['simpan'])) {
   <div id="app">
     <?php include "sidebar.php" ?>
   </div>
-
-  <!-- Table head options start -->
   <div id="main">
     <div class="page-heading">
       <div class="page-title">
         <div class="row">
-          <!-- <div class="col-12 col-md-6 order-md-1 order-last"> -->
           <section class="section">
             <div class="row" id="table-head">
               <div class="col-12">
@@ -106,17 +100,17 @@ if (isset($_POST['simpan'])) {
                     <h4 class="card-title">Daftar Pelanggan</h4>
                   </div>
                   <div class="card-content">
-                    <!-- table head dark -->
                     <div class="table-responsive">
                       <table class="table mb-3" id="table1">
                         <thead class="thead-dark">
                           <tr>
                             <th>No</th>
-                            <th>ID Pelanggan</th>
                             <th>Nama</th>
                             <th>Alamat</th>
                             <th>Jenis Kelamin</th>
                             <th>No. Telepon</th>
+                            <th>Jumlah Transaksi</th>
+                            <th>Jumlah Hadiah</th>
                             <th>Aksi</th>
                           </tr>
                         </thead>
@@ -126,11 +120,26 @@ if (isset($_POST['simpan'])) {
                             <?php $no++ ?>
                             <tr>
                               <td><?= $no ?></td>
-                              <td><?= $pelanggan['id'] ?></td>
                               <td><?= $pelanggan['nama'] ?></td>
                               <td><?= $pelanggan['alamat'] ?></td>
                               <td><?= $pelanggan['jenis_kelamin'] ?></td>
                               <td><?= $pelanggan['tlp'] ?></td>
+                              <td>
+                                <?php
+                                $idPelanggan = $pelanggan['id'];
+                                $queryCountTransactions = "SELECT COUNT(*) AS total FROM tb_transaksi WHERE id_pelanggan = '$idPelanggan'";
+                                $execCountTransactions = mysqli_query($conn, $queryCountTransactions);
+                                $dataCountTransactions = mysqli_fetch_assoc($execCountTransactions);
+                                echo $dataCountTransactions['total'];
+                                ?>
+                              </td>
+                              <td>
+                                <?php
+                                $totalTransactions = $dataCountTransactions['total'];
+                                $jumlahHadiah = floor($totalTransactions / 10);
+                                echo $jumlahHadiah;
+                                ?>
+                              </td>
                               <td>
                                 <a href="" class="btn icon icon-left btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#normal<?= $pelanggan['id']; ?>">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit">
@@ -146,7 +155,6 @@ if (isset($_POST['simpan'])) {
                                           <i data-feather="x"></i>
                                         </button>
                                       </div>
-
                                       <form action="" method="post">
                                         <div class="modal-body">
                                           <label>Nama : </label>
@@ -161,7 +169,6 @@ if (isset($_POST['simpan'])) {
                                           <div class=" form-group">
                                             <select class="form-select" id="basicSelect" name="jenis_kelamin">
                                               <option value="<?= $pelanggan['jenis_kelamin'] ?>"><?= $pelanggan['jenis_kelamin'] ?></option>
-                                              <!-- <option value="kasir">Kasir</option> -->
                                             </select>
                                           </div>
                                           <label>No. Tlp: </label>
@@ -184,15 +191,9 @@ if (isset($_POST['simpan'])) {
                                     </div>
                                   </div>
                                 </div>
-                                <!-- <a href="?delete=<?php //echo $pelanggan['id'] 
-                                                      ?>" class="btn icon icon-left btn-danger"><i class="bi bi-x"></i>
-                                  DELETE</a> -->
-
                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#defaultSize<?= $pelanggan['id'] ?>">
                                   <i class="bi bi-trash"></i>
                                 </button>
-
-                                <!--Default size Modal -->
                                 <div class="modal fade text-left" id="defaultSize<?= $pelanggan['id'] ?>" tabindex="-1" aria-labelledby="myModalLabel18" aria-hidden="true" style="display: none;">
                                   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
                                     <div class="modal-content">
@@ -231,7 +232,6 @@ if (isset($_POST['simpan'])) {
                       </table>
                     </div>
                   </div>
-
                   <div class="card-footer d-flex justify-content-between">
                     <a href="../register.php" class="btn icon icon-left btn-success" data-bs-toggle="modal" data-bs-target="#default"><i class="bi bi-person-plus-fill"></i>
                       TAMBAH</a>
@@ -245,7 +245,6 @@ if (isset($_POST['simpan'])) {
                               <i data-feather="x"></i>
                             </button>
                           </div>
-
                           <form action="" method="post">
                             <div class="modal-body">
                               <label>Nama : </label>
@@ -274,13 +273,11 @@ if (isset($_POST['simpan'])) {
                                 <span class="d-none d-sm-block">Close</span>
                               </button>
                               <button type="submit" class="btn btn-primary ml-1" data-bs-dismiss="modal" name="simpan" value="SIMPAN DATA">
-                                <!-- <input type="text" class="visually-hidden" value="" name="id"> -->
                                 <i class="bx bx-check d-block d-sm-none"></i>
                                 <span class="d-none d-sm-block">Simpan</span>
                               </button>
                             </div>
                           </form>
-
                         </div>
                       </div>
                     </div>
@@ -289,23 +286,14 @@ if (isset($_POST['simpan'])) {
               </div>
             </div>
           </section>
-          <!--login form Modal -->
-
-
         </div>
-        <!-- </div> -->
       </div>
     </div>
   </div>
-
-
-  <!-- Form and scrolling Components start -->
-
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
   <script src="../assets/extensions/simple-datatables/umd/simple-datatables.js"></script>
   <script src="../assets/js/pages/simple-datatables.js"></script>
-
 </body>
 
 </html>

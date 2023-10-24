@@ -3,10 +3,7 @@ if (!isset($_SESSION['loginadmin'])) {
   header("location: ../index.php");
   exit;
 }
-
 $page = "laporan_transaksi";
-
-
 // Cari
 if (isset($_POST['cari'])) {
   $awal = date("Y-m-d H:i:s", strtotime($_POST["awal"]));
@@ -25,25 +22,17 @@ if (isset($_POST['cari'])) {
   if (mysqli_num_rows($execTransaksi) == 0) {
     $error = true;
   }
-
   $listQuery = [];
   $i = 0;
   foreach ($semuaId as $id) {
     $listQuery[$i] = "SELECT * FROM tb_detail_transaksi WHERE id_transaksi = $id";
     $i++;
   }
-
   if (!@$error) {
     $coba = true;
   }
-
-  // var_dump($listQuery);
 }
 ?>
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -63,7 +52,6 @@ if (isset($_POST['cari'])) {
       @page {
         size: landscape;
       }
-
       #sidebar {
         display: none;
       }
@@ -73,8 +61,7 @@ if (isset($_POST['cari'])) {
 
 <body>
   <div id="app">
-    <?php include "sidebar.php";
-    ?>
+    <?php include "sidebar.php";?>
     <div id="main">
       <p class="fs-4">Laporan Transaksi</p>
       <div class="row mb-3">
@@ -100,7 +87,6 @@ if (isset($_POST['cari'])) {
           </div>
         </div>
       </div>
-
       <?php if (@$coba) :  ?>
         <div class="row mb-3">
           <div class="col-12">
@@ -144,7 +130,6 @@ if (isset($_POST['cari'])) {
                         $beratPaket[] += $paket['qty'];
                         $semuaPaket[] += $paket['id_paket'];
                       }
-                      // var_dump($semuaPaket, $beratPaket);
                       $c = 0;
                       foreach ($dataPaket as $hrg) {
                         if ($hrg['id_paket'] == $semuaPaket[$c] && $hrg['id_transaksi'] == $idTransaksi) {
@@ -182,9 +167,7 @@ if (isset($_POST['cari'])) {
                       <?php $i++ ?>
                       <?php $no++ ?>
                     <?php } ?>
-                    <?php $totalHarga
-
-                    ?>
+                    <?php $totalHarga?>
                     <?php foreach ($bayar as $tes) {
                       @$totalHarga += $tes;
                     }
@@ -193,7 +176,6 @@ if (isset($_POST['cari'])) {
                       <td colspan="5">Total</td>
                       <td>Rp. <?= $totalHarga ?></td>
                     </tr>
-
                   </table>
                 </div>
               </div>
@@ -209,7 +191,6 @@ if (isset($_POST['cari'])) {
         </div>
     </div>
   </div>
-
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
   <script src="../assets/extensions/simple-datatables/umd/simple-datatables.js"></script>

@@ -1,8 +1,6 @@
 <?php
-
 include "../db.php";
 $page = "dashboard";
-
 if (empty($_SESSION['loginadmin'])) {
   header("Location: ../index.php");
 }
@@ -10,16 +8,13 @@ if (empty($_SESSION['loginadmin'])) {
 $queryUser = "SELECT * FROM user";
 $execUser = mysqli_query($conn, $queryUser);
 $dataUser = mysqli_fetch_all($execUser, MYSQLI_ASSOC);
-
 // Harian
 $queryTransaksiHarian = "SELECT * FROM tb_transaksi WHERE  cast(tgl AS Date) = CURRENT_DATE";
 $execTransaksiHarian = mysqli_query($conn, $queryTransaksiHarian);
 $dataTransaksiHarian = mysqli_fetch_all($execTransaksiHarian, MYSQLI_ASSOC);
-
 $queryPaket = "SELECT * FROM tb_paket";
 $execPaket = mysqli_query($conn, $queryPaket);
 $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
-
 
 $idTransaksiHarian = [];
 foreach ($dataTransaksiHarian as $harian) {
@@ -51,8 +46,6 @@ foreach ($queryHarian as $query) {
     }
   }
 }
-
-
 
 // Bulanan
 $queryTransaksiBulanan = 'SELECT * FROM tb_transaksi WHERE Date_format(tgl, "%m") = DATE_FORMAT(CURRENT_DATE, "%m")';
@@ -90,8 +83,6 @@ foreach ($queryBulanan as $query) {
     }
   }
 }
-// echo $totalBulanan;
-
 ?>
 
 <!DOCTYPE html>
@@ -105,12 +96,7 @@ foreach ($queryBulanan as $query) {
   <link rel="stylesheet" href="../assets/css/main/app-dark.css">
   <link rel="shortcut icon" href="../assets/images/logo/favicon.svg" type="image/x-icon">
   <link rel="shortcut icon" href="../assets/images/logo/favicon.png" type="image/png">
-
-
-
   <link rel="stylesheet" href="../assets/css/shared/iconly.css">
-
-
   <title>Document</title>
 </head>
 
@@ -174,7 +160,6 @@ foreach ($queryBulanan as $query) {
     </div>
   </div>
 
-
   <div id="main">
     <div class="page-heading">
       <div class="page-title">
@@ -193,10 +178,6 @@ foreach ($queryBulanan as $query) {
 
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
-
-  <!-- Need: Apexcharts -->
-  <script src="../assets/extensions/apexcharts/apexcharts.min.js"></script>
-  <script src="../assets/js/pages/dashboard.js"></script>
 </body>
 
 </html>
