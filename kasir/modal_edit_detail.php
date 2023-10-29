@@ -1,5 +1,4 @@
-<button type="button" data-bs-toggle="modal" data-bs-target="#normal" class="btn btn-warning"><i class="fa fa-address-book"></i> Edit Data</button>
-
+<button type="button" data-bs-toggle="modal" data-bs-target="#normal" class="btn btn-warning"><i class="fa fa-address-book"></i>Edit Data</button>
 <div class="modal fade text-left" id="normal" tabindex="-1" aria-labelledby="myModalLabel1" style="display: none;" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" role="document">
     <div class="modal-content">
@@ -22,7 +21,6 @@
                 </label>
                 <fieldset class="form-group">
                   <select class="form-select" id="basicSelect" name="pelanggan">
-
                     <?php foreach ($dataSemuaPelanggan as $pelanggan) : ?>
                       <?php $terpilih = ""; ?>
                       <?php if ($dataTransaksi['id_pelanggan'] == $pelanggan['id']) {
@@ -71,10 +69,10 @@
                 </label>
                 <fieldset class="form-group">
                   <select class="form-select" id="basicSelect" name="status">
-                    <option value="baru">Baru</option>
-                    <option value="proses">Proses</option>
-                    <option value="selesai">Selesai</option>
-                    <option value="diambil">Diambil</option>
+                    <option value="baru" <?= ($dataTransaksi['status'] == 'baru') ? 'selected' : ''; ?>>Baru</option>
+                    <option value="proses" <?= ($dataTransaksi['status'] == 'proses') ? 'selected' : ''; ?>>Proses</option>
+                    <option value="selesai" <?= ($dataTransaksi['status'] == 'selesai') ? 'selected' : ''; ?>>Selesai</option>
+                    <option value="diambil" <?= ($dataTransaksi['status'] == 'diambil') ? 'selected' : ''; ?>>Diambil</option>
                   </select>
                 </fieldset>
               </div>
@@ -86,8 +84,8 @@
                 </label>
                 <fieldset class="form-group">
                   <select class="form-select" id="basicSelect" name="status_bayar">
-                    <option value="dibayar">Dibayar</option>
-                    <option value="belum_dibayar">Belum Dibayar</option>
+                    <option value="dibayar" <?= ($dataTransaksi['dibayar'] == 'dibayar') ? 'selected' : ''; ?>>Dibayar</option>
+                    <option value="belum_dibayar" <?= ($dataTransaksi['dibayar'] == 'belum_dibayar') ? 'selected' : ''; ?>>Belum Dibayar</option>
                   </select>
                 </fieldset>
               </div>

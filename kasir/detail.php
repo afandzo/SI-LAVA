@@ -32,7 +32,6 @@ if ((!isset($_GET['idtransaksi']) || !isset($_GET['kode'])) || ($kode !== $dataT
   header("Location: riwayat_transaksi.php");
   exit;
 }
-
 if ($dataTransaksi['dibayar'] == 'belum_dibayar') {
   $bayarBadge = "badge bg-danger";
 } if ($dataTransaksi['dibayar'] == 'dibayar') {
@@ -46,7 +45,6 @@ if ($dataTransaksi['dibayar'] == 'belum_dibayar') {
 } if ($dataTransaksi['status'] == 'diambil') {
   $statusBadge  = "badge bg-success";
 }
-
 if ($dataTransaksi['dibayar'] == 'belum_dibayar') {
   $bayar = "Belum Dibayar";
 } if ($dataTransaksi['dibayar'] == 'dibayar') {
@@ -133,15 +131,8 @@ if (isset($_POST['simpan'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/main/app.css">
-  <link rel="stylesheet" href="../assets/css/main/app-dark.css">
-  <link rel="shortcut icon" href="../assets/images/logo/favicon.svg" type="image/x-icon">
-  <link rel="shortcut icon" href="../assets/images/logo/favicon.png" type="image/png">
+  <?php include "head_css.php"; ?>
   <style>
     @media print {
       @page {
@@ -154,12 +145,10 @@ if (isset($_POST['simpan'])) {
   </style>
   <title>Detail Paket</title>
 </head>
-
 <body class="theme-dark" style="overflow-y: auto;">
   <div id="app">
     <?php include "sidebar.php" ?>
   </div>
-
   <div id="main">
     <div class="page-heading">
       <div class="page-title">

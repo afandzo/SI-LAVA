@@ -1,7 +1,7 @@
 <?php
 include "../db.php";
 include "../filelog.php";
-if (empty($_SESSION['loginkasir'])) {
+if (empty($_SESSION['loginpelanggan'])) {
   header("Location: ../index.php");
 }
 $page = "transaksi";
@@ -10,9 +10,9 @@ $queryTransaksi = "SELECT * FROM tb_transaksi";
 $execTransaksi = mysqli_query($conn, $queryTransaksi);
 $dataTransaksi = mysqli_fetch_all($execTransaksi, MYSQLI_ASSOC);
 //ambil data pelanggan
-$querypelanggan = "SELECT * FROM tb_pelanggan";
-$execPelanggan = mysqli_query($conn, $querypelanggan);
-$dataPelanggan = mysqli_fetch_all($execPelanggan, MYSQLI_ASSOC);
+$queryKasir = "SELECT * FROM user WHERE role = 'kasir'";
+$execKasir = mysqli_query($conn, $queryKasir);
+$dataKasir = mysqli_fetch_all($execKasir, MYSQLI_ASSOC);
 // Ambil data paket
 $queryPaket = "SELECT * FROM tb_paket";
 $execPaket = mysqli_query($conn, $queryPaket);
@@ -34,16 +34,15 @@ if (isset($_POST['simpan'])) {
   $queryTambah = "SELECT * FROM tb_transaksi";
   $execTambah = mysqli_query($conn, $queryTambah);
   $dataTambah = mysqli_fetch_array($execTambah, MYSQLI_ASSOC);
-  $nama_pelanggan = $_POST['nama_plgn'];
   $kode = $_POST['random'];
   $tgl = $_POST['tgl'];
   $batas_waktu = $_POST['batas_waktu'];
-  $tgl_bayar = $_POST['tgl_bayar'];
-  $status = $_POST['status'];
-  $status_bayar = $_POST['bayar'];
-  $nama_kasir = $_POST['kasir'];
-  $iduser = $_SESSION['id'];
-  $insert = "INSERT INTO `tb_transaksi` (`id`, `kode_invoice`, `id_pelanggan`, `tgl`, `batas_waktu`, `tgl_bayar`, `diskon`, `status`, `dibayar`, `id_user`) VALUES (NULL, '$kode', '$nama_pelanggan', '$tgl', '$batas_waktu', '$tgl_bayar', '', '$status', '$status_bayar', '$iduser');";
+  $tgl_bayar = null;
+  $status = 'baru';
+  $status_bayar = 'belum_dibayar';
+  $id_kasir = $_POST['kasir'];
+  $id_pelanggan = $_SESSION['id'];
+  $insert = "INSERT INTO `tb_transaksi` (`id`, `kode_invoice`, `id_pelanggan`, `tgl`, `batas_waktu`, `tgl_bayar`, `diskon`, `status`, `dibayar`, `id_user`) VALUES (NULL, '$kode', '$id_pelanggan', '$tgl', '$batas_waktu', '$tgl_bayar', '', '$status', '$status_bayar', '$id_kasir');";
   $sql = mysqli_query($conn, $insert);
 
   $kode = $_POST['random'];
@@ -65,16 +64,16 @@ if (isset($_POST['simpan'])) {
     if ($execTambah) {
       echo "<script>alert('Transaksi Berhasil');</script>";
       // Check if the customer has reached 10 transactions
-      $queryCountTransactions = "SELECT COUNT(*) AS total FROM tb_transaksi WHERE id_pelanggan = '$nama_pelanggan'";
+      $queryCountTransactions = "SELECT COUNT(*) AS total FROM tb_transaksi WHERE id_pelanggan = '$id_pelanggan'";
       $execCountTransactions = mysqli_query($conn, $queryCountTransactions);
       $dataCountTransactions = mysqli_fetch_assoc($execCountTransactions);
       $totalTransactions = $dataCountTransactions['total'];
       if ($totalTransactions % 10 == 0) {
-        $customerQuery = "SELECT nama FROM tb_pelanggan WHERE id = '$nama_pelanggan'";
+        $customerQuery = "SELECT nama FROM tb_pelanggan WHERE id = '$id_pelanggan'";
         $customerResult = mysqli_query($conn, $customerQuery);
         $customerData = mysqli_fetch_assoc($customerResult);
         $customerName = $customerData['nama'];
-        echo "<script>alert('Selamat! Pelanggan " . $customerName . " mendapatkan hadiah.');</script>";
+        echo "<script>alert('Selamat! Kepada Pelanggan `" . $customerName . "` mendapatkan hadiah.');</script>";
     }
     } else {
       echo "
@@ -122,13 +121,8 @@ if (isset($_POST['simpan'])) {
                           <div class="col-md-6 col-12">
                             <div class="form-group">
                               <label>Nama Pelanggan</label>
-                              <div class="form-group">
-                                <select class="form-select" id="nama_pelanggan" name="nama_plgn">
-                                  <?php foreach ($dataPelanggan as $pelanggan) { ?>
-                                    <option value="<?= $pelanggan['id'] ?>"><?= $pelanggan['nama'] ?></option>
-                                  <?php } ?>
-                                </select>
-                              </div>
+                              <input value="<?= $_SESSION['nama'] ?>" type="text" id="user" class="form-control" readonly="">
+                              <input value="<?= $_SESSION['id'] ?>" type="text" name="nama_plgn" hidden>
                             </div>
                           </div>
                           <div class="col-md-6 col-12">
@@ -145,30 +139,12 @@ if (isset($_POST['simpan'])) {
                           </div>
                           <div class="col-md-6 col-12">
                             <div class="form-group">
-                              <label for="bayar">Tanggal Bayar</label>
-                              <input type="datetime-local" id="bayar" class="form-control" name="tgl_bayar" placeholder="Tanggal Bayar">
-                            </div>
-                          </div>
-                          <div class="col-md-6 col-12">
-                            <div class="form-group">
-                              <label>Status</label>
-                              <div class=" form-group">
-                                <select class="form-select" id="basicSelect" name="status">
-                                  <option value="baru">Baru</option>
-                                  <option value="proses">Proses</option>
-                                  <option value="selesai">Selesai</option>
-                                  <option value="diambil">Diambil</option>
-                                </select>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-md-6 col-12">
-                            <div class="form-group">
-                              <label>Status Bayar</label>
-                              <div class=" form-group">
-                                <select class="form-select" id="basicSelect" name="bayar">
-                                  <option value="belum_dibayar">Belum Dibayar</option>
-                                  <option value="dibayar">Dibayar</option>
+                              <label for="user">Pilih Kasir</label>
+                              <div class="form-group">
+                                <select class="form-select" id="nama_pelanggan" name="kasir">
+                                  <?php foreach ($dataKasir as $kasir) { ?>
+                                    <option value="<?= $kasir['id'] ?>"><?= $kasir['nama'] ?></option>
+                                  <?php } ?>
                                 </select>
                               </div>
                             </div>
@@ -208,12 +184,6 @@ if (isset($_POST['simpan'])) {
                                   </tbody>
                                 </table>
                               </div>
-                            </div>
-                          </div>
-                          <div class="col-md-6 col-12">
-                            <div class="form-group">
-                              <label for="user">Nama Kasir</label>
-                              <input value="<?= $_SESSION['nama'] ?>" type="text" id="user" class="form-control" name="kasir" placeholder="Nama Kasir" readonly="">
                             </div>
                           </div>
                           <div class="col-md-6 col-12">

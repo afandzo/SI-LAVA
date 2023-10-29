@@ -30,9 +30,8 @@ $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../assets/css/main/app.css">
@@ -47,7 +46,6 @@ $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
     }
   </style>
 </head>
-
 <body onload="window.print();">
   <div class="container-fluid">
     <div class="card">
@@ -66,7 +64,7 @@ $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
       <div class="card-body">
         <!--rows -->
         <div class="row">
-          <div class="col-sm-4">
+          <div class="col-sm-6">
             <div class="form-group">
               <table class="table">
                 <tbody>
@@ -98,6 +96,19 @@ $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
                   <tr>
                     <td>Status</td>
                     <td>: <?= $dataTransaksi['status'] ?></td>
+                  </tr>
+                  <tr>
+                    <td>Kasir</td>
+                    <?php
+                    $id_kasir = $dataTransaksi['id_user'];
+                    // Ambil data kasir berdasarkan id_kasir
+                    $queryKasir = "SELECT * FROM user WHERE id = $id_kasir";
+                    $execKasir = mysqli_query($conn, $queryKasir);
+                    $dataKasir = mysqli_fetch_assoc($execKasir);
+                    // Tampilkan nama kasir
+                    $namaKasir = ($dataKasir) ? $dataKasir['nama'] : 'Tidak Diketahui';
+                    ?>
+                    <td>: <?= $namaKasir ?></td>
                   </tr>
                 </tbody>
               </table>
@@ -174,5 +185,4 @@ $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
 </body>
-
 </html>

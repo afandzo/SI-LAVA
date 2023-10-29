@@ -1,7 +1,7 @@
 <?php
 include "../db.php";
 include "../filelog.php";
-if (empty($_SESSION['loginkasir'])) {
+if (empty($_SESSION['loginadmin'])) {
   header("Location: ../index.php");
 }
 $page = "dashboard";
@@ -14,7 +14,7 @@ if (isset($_POST['edit'])) {
   if ($execUpdateUser) {
     $log = $_SESSION['nama'] . "  " . "(" . $_SESSION['role'] . ")" . "  " . "Telah Mengubah profile.";
     logger($log, "../../../../../");
-    echo "<script>alert('Berhasil update profile'); window.location.href='profile_kasir.php';</script>";
+    echo "<script>alert('Berhasil update profile'); window.location.href='profile_admin.php';</script>";
   }
 }
 if (isset($_POST['ubahPassword'])) {
@@ -37,15 +37,15 @@ if (isset($_POST['ubahPassword'])) {
       if ($execUpdatePassword) {
         $log = $_SESSION['nama'] . "  " . "(" . $_SESSION['role'] . ")" . "  " . "Telah Mengubah password. Dengan id user (" . $id . "). Pada Data Kasir.";
         logger($log, "../../../../../");
-        echo "<script>alert('Password berhasil diubah'); window.location.href='profile_kasir.php';</script>";
+        echo "<script>alert('Password berhasil diubah'); window.location.href='profile_admin.php';</script>";
       } else {
-        echo "<script>alert('Gagal mengubah password'); window.location.href='profile_kasir.php';</script>";
+        echo "<script>alert('Gagal mengubah password'); window.location.href='profile_admin.php';</script>";
       }
     } else {
-      echo "<script>alert('Password baru dan konfirmasi password tidak cocok'); window.location.href='profile_kasir.php';</script>";
+      echo "<script>alert('Password baru dan konfirmasi password tidak cocok'); window.location.href='profile_admin.php';</script>";
     }
   } else {
-    echo "<script>alert('Password lama tidak cocok'); window.location.href='profile_kasir.php';</script>";
+    echo "<script>alert('Password lama tidak cocok'); window.location.href='profile_admin.php';</script>";
   }
 }
 ?>

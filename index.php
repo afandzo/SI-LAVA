@@ -8,45 +8,64 @@ if (!empty($_SESSION['username'])) {
 if (isset($_POST['submit'])) {
   $username = $_POST['username'] ?? null;
   $password = $_POST['password'] ?? null;
-  $result = mysqli_query(
-    $conn,
-    "SELECT * FROM user WHERE username = '$username'"
-  );
-  $row = mysqli_fetch_assoc($result);
+  // Cek di tabel admin
+  $resultAdmin = mysqli_query($conn,"SELECT * FROM user WHERE username = '$username' AND role = 'admin'");
+  $rowAdmin = mysqli_fetch_assoc($resultAdmin);
+  // Cek di tabel kasir
+  $resultKasir = mysqli_query($conn,"SELECT * FROM user WHERE username = '$username' AND role = 'kasir'");
+  $rowKasir = mysqli_fetch_assoc($resultKasir);
+  // Cek di tabel pelanggan
+  $resultPelanggan = mysqli_query($conn,"SELECT * FROM tb_pelanggan WHERE username = '$username'");
+  $rowPelanggan = mysqli_fetch_assoc($resultPelanggan);
 
-  if (empty($row)) {
+  if (empty($rowAdmin) && empty($rowKasir) && empty($rowPelanggan)) {
+    // Tidak ada data dari tiga role
     $error = true;
-  } elseif ($username == $row['username'] && $password == $row['password'] && $row['role'] == 'admin') {
-    $log = $row['nama'] . "  " . "(" . $row['role'] . ")" . "  " . "Melakukan Login";
+  } elseif (!empty($rowAdmin) && password_verify($password, $rowAdmin['password'])) {
+    // Login sebagai admin
+    $log = $rowAdmin['nama'] . "  " . "(" . $rowAdmin['role'] . ")" . "  " . "Melakukan Login";
     logger($log, "../../../../");
-    $_SESSION['id'] = $row['id'];
-    $_SESSION['nama'] = $row['nama'];
-    $_SESSION['username'] = $row['username'];
-    $_SESSION['password'] = $row['password'];
-    $_SESSION['role'] = $row['role'];
+    $_SESSION['id'] = $rowAdmin['id'];
+    $_SESSION['nama'] = $rowAdmin['nama'];
+    $_SESSION['username'] = $rowAdmin['username'];
+    $_SESSION['password'] = $rowAdmin['password'];
+    $_SESSION['role'] = $rowAdmin['role'];
     $_SESSION['loginadmin'] = true;
     header('location: admin/admin.php');
     exit;
-  } elseif ($username == $row['username'] && $password == $row['password'] && $row['role'] == 'kasir') {
-    $log = $row['nama'] . "  " . "(" . $row['role'] . ")" . "  " . "Melakukan Login";
+  } elseif (!empty($rowKasir) && password_verify($password, $rowKasir['password'])) {
+    // Login sebagai kasir
+    $log = $rowKasir['nama'] . "  " . "(" . $rowKasir['role'] . ")" . "  " . "Melakukan Login";
     logger($log, "../../../../");
-    $_SESSION['id'] = $row['id'];
-    $_SESSION['nama'] = $row['nama'];
-    $_SESSION['username'] = $row['username'];
-    $_SESSION['password'] = $row['password'];
-    $_SESSION['role'] = $row['role'];
+    $_SESSION['id'] = $rowKasir['id'];
+    $_SESSION['nama'] = $rowKasir['nama'];
+    $_SESSION['username'] = $rowKasir['username'];
+    $_SESSION['password'] = $rowKasir['password'];
+    $_SESSION['role'] = $rowKasir['role'];
     $_SESSION['loginkasir'] = true;
     header('location: kasir/kasir.php');
     exit;
+  } elseif (!empty($rowPelanggan) && password_verify($password, $rowPelanggan['password'])) {
+    // Login sebagai pelanggan
+    $log = $rowPelanggan['nama'] . "  " . "(Pelanggan)" . "  " . "Melakukan Login";
+    logger($log, "../../../../");
+    $_SESSION['id'] = $rowPelanggan['id'];
+    $_SESSION['nama'] = $rowPelanggan['nama'];
+    $_SESSION['username'] = $rowPelanggan['username'];
+    $_SESSION['password'] = $rowPelanggan['password'];
+    $_SESSION['jenis_kelamin'] = $rowPelanggan['jenis_kelamin'];
+    $_SESSION['role'] = 'pelanggan';
+    $_SESSION['loginpelanggan'] = true;
+    header('location: pelanggan/pelanggan.php');
+    exit;
   } else {
+    // Password salah
     $salah = true;
   }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -68,7 +87,6 @@ if (isset($_POST['submit'])) {
   <?php endif; ?>
   <title>Login</title>
 </head>
-
 <body>
   <div id="auth">
     <div class="row h-100">
@@ -105,7 +123,6 @@ if (isset($_POST['submit'])) {
       </footer>
     </div>
   </div>
-
   <script src="assets/js/bootstrap.js"></script>
   <script src="assets/js/app.js"></script>
   <!-- Need: Apexcharts -->
@@ -120,5 +137,4 @@ if (isset($_POST['submit'])) {
     <script type="text/javascript" src="toastify/script2.js"></script>
   <?php endif; ?>
 </body>
-
 </html>

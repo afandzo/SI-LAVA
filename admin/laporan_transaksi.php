@@ -35,18 +35,9 @@ if (isset($_POST['cari'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <?php include "head_css.php"; ?>
   <title>Laporan Transaksi</title>
-  <link rel="stylesheet" href="../assets/css/main/app.css">
-  <link rel="shortcut icon" href="../assets/images/logo/favicon.png" type="image/png">
-  <link rel="stylesheet" href="../assets/css/main/app-dark.css">
-  <link rel="stylesheet" href="../assets/css/shared/iconly.css">
-  <link rel="stylesheet" href="../assets/extensions/simple-datatables/style.css">
-  <link rel="stylesheet" href="../assets/css/pages/simple-datatables.css">
   <style>
     @media print {
       @page {
@@ -58,7 +49,6 @@ if (isset($_POST['cari'])) {
     }
   </style>
 </head>
-
 <body>
   <div id="app">
     <?php include "sidebar.php";?>
@@ -196,5 +186,4 @@ if (isset($_POST['cari'])) {
   <script src="../assets/extensions/simple-datatables/umd/simple-datatables.js"></script>
   <script src="../assets/js/pages/simple-datatables.js"></script>
 </body>
-
 </html>

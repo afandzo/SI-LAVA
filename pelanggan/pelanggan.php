@@ -1,7 +1,7 @@
 <?php
 include "../db.php";
 include "../filelog.php";
-if (empty($_SESSION['loginkasir'])) {
+if (empty($_SESSION['loginpelanggan'])) {
   header("Location: ../index.php");
 }
 $page = "dashboard";
@@ -21,18 +21,6 @@ $page = "dashboard";
       <section class="row">
         <div class="col-12 col-lg-9">
           <div class="row">
-            <div class="col-md-4 col-12">
-              <div class="card">
-                <div class="card-body px-4 py-4-5" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-                  <div class="row">
-                    <a href="data_pelanggan.php" class="btn btn-lg btn-primary" style="font-size: 30px;"><i class="bi bi-people-fill"></i></a>
-                  </div>
-                  <div class="row" style="margin-top: 10px;">
-                    <span style="font-size: 20px;">Data Pelanggan</span>
-                  </div>
-                </div>
-              </div>
-            </div>
             <div class="col-md-4 col-12">
               <div class="card">
                 <div class="card-body px-4 py-4-5" style="display: flex; flex-direction: column; align-items: center; text-align: center;">

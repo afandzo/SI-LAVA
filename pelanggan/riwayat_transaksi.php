@@ -1,16 +1,20 @@
 <?php
 include "../db.php";
 include "../filelog.php";
-if (empty($_SESSION['loginadmin'])) {
+if (empty($_SESSION['loginpelanggan'])) {
   header("Location: ../index.php");
 }
 $page = "riwayat_transaksi";
-//ambil data transaksi
-$queryTransaksi = "SELECT * FROM tb_transaksi";
+// Ambil id_pelanggan dari session
+$id_pelanggan = $_SESSION['id'];
+// Ambil data transaksi hanya untuk pelanggan yang login
+$queryTransaksi = "SELECT * FROM tb_transaksi WHERE id_pelanggan = $id_pelanggan ORDER BY id DESC";
 $execTransaksi = mysqli_query($conn, $queryTransaksi);
 $dataTransaksi = mysqli_fetch_all($execTransaksi, MYSQLI_ASSOC);
-//ambil data detail transaksi
-$queryDetailTransaksi = "SELECT * FROM tb_detail_transaksi";
+// Ambil data detail transaksi yang terkait dengan transaksi pelanggan yang login
+$queryDetailTransaksi = "SELECT dt.* FROM tb_detail_transaksi dt
+                        JOIN tb_transaksi t ON dt.id_transaksi = t.id
+                        WHERE t.id_pelanggan = $id_pelanggan";
 $execDetailTransaksi = mysqli_query($conn, $queryDetailTransaksi);
 $dataDetailTransaksi = mysqli_fetch_all($execDetailTransaksi, MYSQLI_ASSOC);
 
@@ -70,16 +74,39 @@ if (isset($_POST['hps'])) {
                             <?php $no++ ?>
                             <?php
                             if ($transaksi['dibayar'] == 'belum_dibayar') {
+                              $bayarBadge = "badge bg-danger";
+                            }
+                            if ($transaksi['dibayar'] == 'dibayar') {
+                              $bayarBadge  = "badge bg-success";
+                            }
+                            if ($transaksi['status'] == 'baru') {
+                              $statusBadge  = "badge bg-secondary";
+                            }
+                            if ($transaksi['status'] == 'proses') {
+                              $statusBadge  = "badge bg-info";
+                            }
+                            if ($transaksi['status'] == 'selesai') {
+                              $statusBadge  = "badge bg-primary";
+                            }
+                            if ($transaksi['status'] == 'diambil') {
+                              $statusBadge  = "badge bg-success";
+                            }
+                            if ($transaksi['dibayar'] == 'belum_dibayar') {
                               $bayar = "Belum Dibayar";
-                            } if ($transaksi['dibayar'] == 'dibayar') {
+                            }
+                            if ($transaksi['dibayar'] == 'dibayar') {
                               $bayar  = "Dibayar";
-                            } if ($transaksi['status'] == 'baru') {
+                            }
+                            if ($transaksi['status'] == 'baru') {
                               $status  = "Baru";
-                            } if ($transaksi['status'] == 'proses') {
+                            }
+                            if ($transaksi['status'] == 'proses') {
                               $status  = "Proses";
-                            } if ($transaksi['status'] == 'selesai') {
+                            }
+                            if ($transaksi['status'] == 'selesai') {
                               $status  = "Selesai";
-                            } if ($transaksi['status'] == 'diambil') {
+                            }
+                            if ($transaksi['status'] == 'diambil') {
                               $status  = "Diambil";
                             }
                             ?>
@@ -120,14 +147,11 @@ if (isset($_POST['hps'])) {
                                 ?>
                                 <?= $hargaA ?>
                               </td>
-                              <td><?= $bayar ?></td>
-                              <td><?= $status ?></td>
+                              <td><span class="<?= $bayarBadge ?>"><?= $bayar ?></span></td>
+                              <td><span class="<?= $statusBadge ?>"><?= $status ?></span></td>
                               <td>
                                 <a href="detail.php?idtransaksi=<?= $transaksi['id'] ?>&kode=<?= $transaksi['kode_invoice'] ?>" class="btn icon icon-left btn-primary" type="button">
-                                <i class="bi bi-pencil-square"></i></a>
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#defaultSize<?= $transaksi['id'] ?>">
-                                  <i class="bi bi-trash"></i>
-                                </button>
+                                <i class="bi bi-search"></i></a>
                                 <div class="modal fade text-left" id="defaultSize<?= $transaksi['id'] ?>" tabindex="-1" aria-labelledby="myModalLabel18" aria-hidden="true" style="display: none;">
                                   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
                                     <div class="modal-content">

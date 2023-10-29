@@ -5,7 +5,6 @@ if (empty($_SESSION['loginadmin'])) {
   header("Location: ../index.php");
 }
 $page = "data_paket";
-
 $queryPaket = "SELECT * FROM tb_paket";
 $execPaket = mysqli_query($conn, $queryPaket);
 $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
@@ -13,7 +12,6 @@ if (isset($_GET['delete'])) {
   $id = $_GET['delete'];
   $queryDeletePaket = "DELETE FROM tb_paket WHERE `tb_paket`.`id` = $id";
   $execDeletePaket = mysqli_query($conn, $queryDeletePaket);
-
   if ($execDeletePaket) {
     $log = $_SESSION['nama'] . "  " . "(" . $_SESSION['role'] . ")" . "  " . "Telah Menghapus paket. Dengan id paket (" . $id . "). Pada Data Paket Cucian.";
     logger($log, "../../../../../");
@@ -51,25 +49,14 @@ if (isset($_POST['simpan'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/main/app.css">
-  <link rel="stylesheet" href="../assets/css/main/app-dark.css">
-  <link rel="shortcut icon" href="../assets/images/logo/favicon.svg" type="image/x-icon">
-  <link rel="shortcut icon" href="../assets/images/logo/favicon.png" type="image/png">
-  <link rel="stylesheet" href="../assets/extensions/simple-datatables/style.css">
-  <link rel="stylesheet" href="../assets/css/pages/simple-datatables.css">
+  <?php include "head_css.php"; ?>
   <title>Cetak Data Paket</title>
 </head>
-
 <body class="theme-dark" style="overflow-y: auto;">
   <div id="app">
     <?php include "sidebar.php" ?>
   </div>
-
   <div id="main">
     <div class="page-heading">
       <div class="page-title">
@@ -87,7 +74,6 @@ if (isset($_POST['simpan'])) {
                         <thead class="thead-dark">
                           <tr>
                             <th>No</th>
-                            <th>ID Paket</th>
                             <th>Jenis</th>
                             <th>Nama Paket</th>
                             <th>Harga/Kg</th>
@@ -100,7 +86,6 @@ if (isset($_POST['simpan'])) {
                             <?php $no++ ?>
                             <tr>
                               <td><?= $no ?></td>
-                              <td><?= $paket['id'] ?></td>
                               <td><?= $paket['jenis'] ?></td>
                               <td><?= $paket['nama_paket'] ?></td>
                               <td><?= $paket['harga'] ?></td>
@@ -218,11 +203,9 @@ if (isset($_POST['simpan'])) {
       </div>
     </div>
   </div>
-
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
   <script src="../assets/extensions/simple-datatables/umd/simple-datatables.js"></script>
   <script src="../assets/js/pages/simple-datatables.js"></script>
 </body>
-
 </html>

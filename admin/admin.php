@@ -4,7 +4,6 @@ $page = "dashboard";
 if (empty($_SESSION['loginadmin'])) {
   header("Location: ../index.php");
 }
-
 $queryUser = "SELECT * FROM user";
 $execUser = mysqli_query($conn, $queryUser);
 $dataUser = mysqli_fetch_all($execUser, MYSQLI_ASSOC);
@@ -46,7 +45,6 @@ foreach ($queryHarian as $query) {
     }
   }
 }
-
 // Bulanan
 $queryTransaksiBulanan = 'SELECT * FROM tb_transaksi WHERE Date_format(tgl, "%m") = DATE_FORMAT(CURRENT_DATE, "%m")';
 $execTransaksiBulanan = mysqli_query($conn, $queryTransaksiBulanan);
@@ -84,22 +82,12 @@ foreach ($queryBulanan as $query) {
   }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/main/app.css">
-  <link rel="stylesheet" href="../assets/css/main/app-dark.css">
-  <link rel="shortcut icon" href="../assets/images/logo/favicon.svg" type="image/x-icon">
-  <link rel="shortcut icon" href="../assets/images/logo/favicon.png" type="image/png">
-  <link rel="stylesheet" href="../assets/css/shared/iconly.css">
+  <?php include "head_css.php"; ?>
   <title>Document</title>
 </head>
-
 <body class="theme-dark" style="overflow-y: auto;">
   <div id="app">
     <?php include "sidebar.php" ?>
@@ -159,7 +147,6 @@ foreach ($queryBulanan as $query) {
       </div>
     </div>
   </div>
-
   <div id="main">
     <div class="page-heading">
       <div class="page-title">
@@ -167,7 +154,6 @@ foreach ($queryBulanan as $query) {
           <section class="section">
             <div class="container-fluid">
               <div id="content">
-
               </div>
             </div>
           </section>
@@ -175,9 +161,7 @@ foreach ($queryBulanan as $query) {
       </div>
     </div>
   </div>
-
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
 </body>
-
 </html>

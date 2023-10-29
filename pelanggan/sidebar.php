@@ -32,36 +32,30 @@
     <?php
     if ($page == "dashboard") {
       $menu1 = 'active';
-    } if ($page == "data_pelanggan") {
+    }
+    if ($page == "transaksi") {
       $menu2 = 'active';
-    } if ($page == "transaksi") {
+    }
+    if ($page == "riwayat_transaksi") {
       $menu3 = 'active';
-    } if ($page == "riwayat_transaksi") {
-      $menu4 = 'active';
     }
     ?>
     <div class="sidebar-menu">
       <ul class="menu">
         <li class="sidebar-title">Menu</li>
         <li class="sidebar-item <?= @$menu1 ?> ">
-          <a href="kasir.php" class='sidebar-link'>
+          <a href="pelanggan.php" class='sidebar-link'>
             <i class="bi bi-grid-fill"></i>
             <span>Dashboard</span>
           </a>
         </li>
         <li class="sidebar-item <?= @$menu2 ?> ">
-          <a href="data_pelanggan.php" class='sidebar-link'>
-            <i class="bi bi-collection"></i>
-            <span>Data Pelanggan</span>
-          </a>
-        </li>
-        <li class="sidebar-item <?= @$menu3 ?> ">
           <a href="transaksi.php" class='sidebar-link'>
             <i class="bi bi-cash-stack"></i>
             <span>Transaksi</span>
           </a>
         </li>
-        <li class="sidebar-item <?= @$menu4 ?> ">
+        <li class="sidebar-item <?= @$menu3 ?> ">
           <a href="riwayat_transaksi.php" class='sidebar-link'>
             <i class="bi bi-clock"></i>
             <span>Riwayat Transaksi</span>
@@ -79,7 +73,7 @@
 </div>
 <?php
 $id = $_SESSION['id'];
-$queryUserProfile = "SELECT * FROM user where id = $id";
+$queryUserProfile = "SELECT * FROM tb_pelanggan where id = $id";
 $execUserProfile = mysqli_query($conn, $queryUserProfile);
 $dataUserProfile = mysqli_fetch_assoc($execUserProfile);
 ?>
@@ -101,11 +95,16 @@ $dataUserProfile = mysqli_fetch_assoc($execUserProfile);
               <div class="user-menu d-flex">
                 <div class="user-name text-end me-3">
                   <h6 class="mb-0 text-gray-600"><?= $dataUserProfile['nama'] ?></h6>
-                  <p class="mb-0 text-sm text-gray-600"><?= $dataUserProfile['role'] ?></p>
+                  <p class="mb-0 text-sm text-gray-600"><?= $_SESSION['role'] ?></p>
                 </div>
                 <div class="user-img d-flex align-items-center">
                   <div class="avatar avatar-md">
-                    <img src="../assets/images/faces/3.jpg">
+                    <?php
+                    // Misalnya, $jenisKelamin didapatkan dari data pelanggan
+                    $jenisKelamin = $_SESSION['jenis_kelamin']; // Gantilah dengan data sesuai aplikasi Anda
+                    $gambarProfil = ($jenisKelamin == 'Laki-laki') ? '../assets/images/faces/2.jpg' : '../assets/images/faces/3.jpg';
+                    ?>
+                    <img src="<?php echo $gambarProfil; ?>" alt="Profil Pelanggan">
                   </div>
                 </div>
               </div>
@@ -114,7 +113,7 @@ $dataUserProfile = mysqli_fetch_assoc($execUserProfile);
               <li>
                 <h6 class="dropdown-header">Hello, <?= $dataUserProfile['nama'] ?>!</h6>
               </li>
-              <li><a class="dropdown-item" href="profile_kasir.php"><i class="icon-mid bi bi-person me-2"></i> MyProfile</a></li>
+              <li><a class="dropdown-item" href="profile_pelanggan.php"><i class="icon-mid bi bi-person me-2"></i> MyProfile</a></li>
               <li><a class="dropdown-item" href="../logout.php"><i class="icon-mid bi bi-box-arrow-left me-2"></i> Logout</a></li>
             </ul>
           </div>

@@ -1,7 +1,7 @@
 <?php
 include "../db.php";
 include "../filelog.php";
-if (empty($_SESSION['loginadmin'])) {
+if (empty($_SESSION['loginpelanggan'])) {
   header("Location: ../index.php");
 }
 $page = "riwayat_transaksi";
@@ -83,7 +83,6 @@ if (isset($_POST['simpan'])) {
       }
     }
   }
-  // Query Edit data
   // Cek sudah ada isinya tau belum,
   $jumlahRow = mysqli_num_rows($execDetailTransaksi);
   $jumlahPaket = mysqli_num_rows($execPaket);
@@ -172,7 +171,6 @@ if (isset($_POST['simpan'])) {
                   <div class="card-content">
                     <div class="card-body">
                       <div class="card-body">
-                        <!--rows -->
                         <div class="row">
                           <div class="col-sm-5">
                             <div class="form-group">
@@ -202,6 +200,8 @@ if (isset($_POST['simpan'])) {
                                 </tbody>
                               </table>
                             </div>
+                          </div>
+                          <div class="col-sm-8">
                           </div>
                         </div>
                         <div>

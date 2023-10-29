@@ -58,35 +58,30 @@
             <span>Dashboard</span>
           </a>
         </li>
-
         <li class="sidebar-item <?= @$menu2 ?> ">
           <a href="data_kasir.php" class='sidebar-link'>
             <i class="bi bi-file-person "></i>
             <span>Data Pengguna</span>
           </a>
         </li>
-
         <li class="sidebar-item <?= @$menu3 ?> ">
           <a href="data_pelanggan.php" class='sidebar-link'>
             <i class="bi bi-collection"></i>
             <span>Data Pelanggan</span>
           </a>
         </li>
-
         <li class="sidebar-item <?= @$menu4 ?> ">
           <a href="data_paket.php" class='sidebar-link'>
             <i class="bi bi-basket3 "></i>
             <span>Data Paket Cucian</span>
           </a>
         </li>
-
         <li class="sidebar-item <?= @$menu5 ?> ">
           <a href="riwayat_transaksi.php" class='sidebar-link'>
             <i class="bi bi-clock"></i>
             <span>Riwayat Transaksi</span>
           </a>
         </li>
-
         <li class="sidebar-item <?= @$menu6 ?> ">
           <a href="laporan_transaksi.php" class='sidebar-link'>
             <i class="bi bi-cash-stack"></i>
@@ -103,7 +98,6 @@
     </div>
   </div>
 </div>
-
 <?php
 $id = $_SESSION['id'];
 $queryUserProfile = "SELECT * FROM user where id = $id";
@@ -137,9 +131,8 @@ $dataUserProfile = mysqli_fetch_assoc($execUserProfile);
                 </div>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton" style="min-width: 11rem;">
-                <li>
-                  <h6 class="dropdown-header">Hello, <?= $dataUserProfile['nama'] ?>!</h6>
-                </li>
+                <li><h6 class="dropdown-header">Hello, <?= $dataUserProfile['nama'] ?>!</h6></li>
+                </li><li><a class="dropdown-item" href="profile_admin.php"><i class="icon-mid bi bi-person me-2"></i> MyProfile</a></li>
                 <li><a class="dropdown-item" href="../logout.php"><i class="icon-mid bi bi-box-arrow-left me-2"></i> Logout</a></li>
               </ul>
             </div>

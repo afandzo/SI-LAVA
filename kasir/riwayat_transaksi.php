@@ -6,14 +6,13 @@ if (empty($_SESSION['loginkasir'])) {
 }
 $page = "riwayat_transaksi";
 //ambil data transaksi
-$queryTransaksi = "SELECT * FROM tb_transaksi";
+$queryTransaksi = "SELECT * FROM tb_transaksi ORDER BY id DESC";
 $execTransaksi = mysqli_query($conn, $queryTransaksi);
 $dataTransaksi = mysqli_fetch_all($execTransaksi, MYSQLI_ASSOC);
 //ambil data detail transaksi
 $queryDetailTransaksi = "SELECT * FROM tb_detail_transaksi";
 $execDetailTransaksi = mysqli_query($conn, $queryDetailTransaksi);
 $dataDetailTransaksi = mysqli_fetch_all($execDetailTransaksi, MYSQLI_ASSOC);
-
 $querryPaket = "SELECT * FROM tb_paket";
 $execPaket = mysqli_query($conn, $querryPaket);
 $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
@@ -30,20 +29,10 @@ if (isset($_POST['hps'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/main/app.css">
-  <link rel="stylesheet" href="../assets/css/main/app-dark.css">
-  <link rel="shortcut icon" href="../assets/images/logo/favicon.svg" type="image/x-icon">
-  <link rel="shortcut icon" href="../assets/images/logo/favicon.png" type="image/png">
-  <link rel="stylesheet" href="../assets/extensions/simple-datatables/style.css">
-  <link rel="stylesheet" href="../assets/css/pages/simple-datatables.css">
+  <?php include "head_css.php"; ?>
   <title>Riwayat Transaksi</title>
 </head>
-
 <body class="theme-dark" style="overflow-y: auto;">
   <div id="app">
     <?php include "sidebar.php" ?>
@@ -79,6 +68,19 @@ if (isset($_POST['hps'])) {
                           <?php foreach ($dataTransaksi as $transaksi) : ?>
                             <?php $no++ ?>
                             <?php
+                            if ($transaksi['dibayar'] == 'belum_dibayar') {
+                              $bayarBadge = "badge bg-danger";
+                            } if ($transaksi['dibayar'] == 'dibayar') {
+                              $bayarBadge  = "badge bg-success";
+                            } if ($transaksi['status'] == 'baru') {
+                              $statusBadge  = "badge bg-secondary";
+                            } if ($transaksi['status'] == 'proses') {
+                              $statusBadge  = "badge bg-info";
+                            } if ($transaksi['status'] == 'selesai') {
+                              $statusBadge  = "badge bg-primary";
+                            } if ($transaksi['status'] == 'diambil') {
+                              $statusBadge  = "badge bg-success";
+                            }
                             if ($transaksi['dibayar'] == 'belum_dibayar') {
                               $bayar = "Belum Dibayar";
                             } if ($transaksi['dibayar'] == 'dibayar') {
@@ -130,8 +132,8 @@ if (isset($_POST['hps'])) {
                                 ?>
                                 <?= $hargaA ?>
                               </td>
-                              <td><?= $bayar ?></td>
-                              <td><?= $status ?></td>
+                              <td><span class="<?= $bayarBadge ?>"><?= $bayar ?></span></td>
+                              <td><span class="<?= $statusBadge ?>"><?= $status ?></span></td>
                               <td>
                                 <a href="detail.php?idtransaksi=<?= $transaksi['id'] ?>&kode=<?= $transaksi['kode_invoice'] ?>" class="btn icon icon-left btn-primary" type="button">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit">
@@ -196,5 +198,4 @@ if (isset($_POST['hps'])) {
   <script src="../assets/extensions/simple-datatables/umd/simple-datatables.js"></script>
   <script src="../assets/js/pages/simple-datatables.js"></script>
 </body>
-
 </html>

@@ -1,20 +1,22 @@
 <?php
 include "../db.php";
 include "../filelog.php";
-if (empty($_SESSION['loginkasir'])) {
+if (empty($_SESSION['loginpelanggan'])) {
   header("Location: ../index.php");
 }
 $page = "dashboard";
 if (isset($_POST['edit'])) {
   $id = $_POST['id'];
   $nama = $_POST['nama'];
-  $username = $_POST['username'];
-  $queryUpdateUser = "UPDATE user SET `nama` = '$nama',`username` = '$username' WHERE `user`.`id` = $id";
+  $alamat = $_POST['alamat'];
+  $jenis_kelamin = $_POST['jenis_kelamin'];
+  $tlp = $_POST['tlp'];
+  $queryUpdateUser = "UPDATE tb_pelanggan SET `nama` = '$nama', `alamat` = '$alamat', `jenis_kelamin` = '$jenis_kelamin', `tlp` = '$tlp' WHERE `tb_pelanggan`.`id` = $id";
   $execUpdateUser = mysqli_query($conn, $queryUpdateUser);
   if ($execUpdateUser) {
     $log = $_SESSION['nama'] . "  " . "(" . $_SESSION['role'] . ")" . "  " . "Telah Mengubah profile.";
     logger($log, "../../../../../");
-    echo "<script>alert('Berhasil update profile'); window.location.href='profile_kasir.php';</script>";
+    echo "<script>alert('Berhasil update profile'); window.location.href='profile_pelanggan.php';</script>";
   }
 }
 if (isset($_POST['ubahPassword'])) {
@@ -23,7 +25,7 @@ if (isset($_POST['ubahPassword'])) {
   $passBaru = $_POST['passBaru'];
   $passKonfir = $_POST['passKonfir'];
   // Ambil password lama dari database
-  $queryGetPassword = "SELECT `password` FROM user WHERE `id` = $id";
+  $queryGetPassword = "SELECT `password` FROM tb_pelanggan WHERE `id` = $id";
   $resultGetPassword = mysqli_query($conn, $queryGetPassword);
   $dataPassword = mysqli_fetch_assoc($resultGetPassword);
   // Verifikasi password lama
@@ -32,20 +34,20 @@ if (isset($_POST['ubahPassword'])) {
     if ($passBaru == $passKonfir) {
       // Password baru dan konfirmasi password cocok
       $hashedPassBaru = password_hash($passBaru, PASSWORD_ARGON2I);
-      $queryUpdatePassword = "UPDATE user SET `password` = '$hashedPassBaru' WHERE `user`.`id` = $id";
+      $queryUpdatePassword = "UPDATE tb_pelanggan SET `password` = '$hashedPassBaru' WHERE `tb_pelanggan`.`id` = $id";
       $execUpdatePassword = mysqli_query($conn, $queryUpdatePassword);
       if ($execUpdatePassword) {
-        $log = $_SESSION['nama'] . "  " . "(" . $_SESSION['role'] . ")" . "  " . "Telah Mengubah password. Dengan id user (" . $id . "). Pada Data Kasir.";
+        $log = $_SESSION['nama'] . "  " . "(" . $_SESSION['role'] . ")" . "  " . "Telah Mengubah password.";
         logger($log, "../../../../../");
-        echo "<script>alert('Password berhasil diubah'); window.location.href='profile_kasir.php';</script>";
+        echo "<script>alert('Password berhasil diubah'); window.location.href='profile_pelanggan.php';</script>";
       } else {
-        echo "<script>alert('Gagal mengubah password'); window.location.href='profile_kasir.php';</script>";
+        echo "<script>alert('Gagal mengubah password'); window.location.href='profile_pelanggan.php';</script>";
       }
     } else {
-      echo "<script>alert('Password baru dan konfirmasi password tidak cocok'); window.location.href='profile_kasir.php';</script>";
+      echo "<script>alert('Password baru dan konfirmasi password tidak cocok'); window.location.href='profile_pelanggan.php';</script>";
     }
   } else {
-    echo "<script>alert('Password lama tidak cocok'); window.location.href='profile_kasir.php';</script>";
+    echo "<script>alert('Password lama tidak cocok'); window.location.href='profile_pelanggan.php';</script>";
   }
 }
 ?>
@@ -67,21 +69,37 @@ if (isset($_POST['ubahPassword'])) {
         <div class="card-body">
           <form action="" method="post">
             <div class="modal-body">
-            <input type="text" class="visually-hidden" value="<?= $dataUserProfile['id'] ?>" name="id">
+              <input type="text" class="visually-hidden" value="<?= $dataUserProfile['id'] ?>" name="id">
               <label>Nama : </label>
               <div class="form-group col-md-6 col-12">
                 <input type="text" placeholder="Nama" class="form-control" name="nama" value="<?= $dataUserProfile['nama'] ?>">
               </div>
+              <label>Jenis Kelamin : </label>
+              <div class="form-group col-md-6 col-12">
+                <select class="form-select" name="jenis_kelamin">
+                  <option value="Laki-laki" <?= ($dataUserProfile['jenis_kelamin'] == 'Laki-laki') ? 'selected' : ''; ?>>Laki-laki</option>
+                  <option value="Perempuan" <?= ($dataUserProfile['jenis_kelamin'] == 'Perempuan') ? 'selected' : ''; ?>>Perempuan</option>
+                </select>
+              </div>
+              <label>Alamat : </label>
+              <div class="form-group col-md-6 col-12">
+                <textarea name="alamat" class="form-control" cols="20" rows="3"><?= $dataUserProfile['alamat'] ?></textarea>
+              </div>
+              <label>No.Telp : </label>
+              <div class="form-group col-md-6 col-12">
+                <input type="text" placeholder="Nama" class="form-control" name="tlp" value="<?= $dataUserProfile['tlp'] ?>">
+              </div>
               <label>Username: </label>
               <div class="form-group col-md-6 col-12">
-                <input type="text" placeholder="Username" class="form-control" name="username" value="<?= $dataUserProfile['username'] ?>">
+                <input type="text" class="form-control" name="username" value="<?= $dataUserProfile['username'] ?>" readonly>
               </div>
               <label>Role: </label>
               <div class="form-group col-md-6 col-12">
-              <input type="text" placeholder="Username" class="form-control" value="<?= $dataUserProfile['role'] ?>" readonly>
+                <input type="text" class="form-control" value="<?= $_SESSION['role'] ?>" readonly>
               </div>
             </div>
             <div class="modal-footer">
+              <!-- <a href="" class="btn icon icon-left btn-primary m-2" type="submit">Edit Profile</a> -->
               <button class="btn icon icon-left btn-primary m-2" type="submit" name="edit">Edit Profile</button>
               <a href="" class="btn icon icon-left btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#ubahPass">Ubah Password</a>
             </div>

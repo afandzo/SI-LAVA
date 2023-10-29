@@ -27,10 +27,8 @@ foreach ($semuaId as $id) {
 $coba = true;
 // var_dump($listQuery);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -43,7 +41,6 @@ $coba = true;
   <link rel="stylesheet" href="../assets/css/shared/iconly.css">
   <title>Cetak Laporan</title>
 </head>
-
 <body onload="window.print();">
   <div class="container-fluid">
     <div class="card">
@@ -55,7 +52,7 @@ $coba = true;
           <div class="col-sm-10 float-left">
             <h3>AVA LAUNDRY</h3>
             <h6>Jl. Jalan, Kebak, Kec. Jumantono, Kabupaten Karanganyar, Telp 0812-1591-2946</h6>
-            <h6>@kuceklaundry</h6>
+            <h6>@avalaundry</h6>
           </div>
         </div>
       </div>

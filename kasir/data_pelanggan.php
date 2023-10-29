@@ -11,26 +11,41 @@ $dataPelanggan = mysqli_fetch_all($execPelanggan, MYSQLI_ASSOC);
 // var_dump($dataPelanggan);
 if (isset($_POST['hps'])) {
   $idPelanggan = $_POST['idhapus'];
-  $queryCari = "SELECT * FROM tb_transaksi WHERE id_pelanggan=$idPelanggan";
+  // Periksa apakah ada transaksi untuk pelanggan
+  $queryCari = "SELECT * FROM tb_transaksi WHERE id_pelanggan = $idPelanggan";
   $execCari = mysqli_query($conn, $queryCari);
   $dataCari = mysqli_fetch_all($execCari, MYSQLI_ASSOC);
-  $idTransaksi = [];
-  foreach ($dataCari as $cari) {
-    $idTransaksi[] += $cari['id'];
-  }
-  foreach ($idTransaksi as $idTransaksiValue) {
-    $queryHapusDetail = "DELETE FROM tb_detail_transaksi WHERE id_transaksi = $idTransaksiValue";
-    $execHapusDetail = mysqli_query($conn, $queryHapusDetail);
-  }
-  $queryHapusTransaksi = "DELETE FROM tb_transaksi WHERE id_pelanggan = $idPelanggan";
-  $execHapusTransaksi = mysqli_query($conn, $queryHapusTransaksi);
-  if ($execHapusDetail && $execHapusTransaksi) {
+  if ($dataCari) {
+    // Jika ada transaksi, hapus detail transaksi
+    $idTransaksi = [];
+    foreach ($dataCari as $cari) {
+      $idTransaksi[] += $cari['id'];
+    }
+    foreach ($idTransaksi as $idTransaksiValue) {
+      $queryHapusDetail = "DELETE FROM tb_detail_transaksi WHERE id_transaksi = $idTransaksiValue";
+      $execHapusDetail = mysqli_query($conn, $queryHapusDetail);
+    }
+    // Hapus data transaksi
+    $queryHapusTransaksi = "DELETE FROM tb_transaksi WHERE id_pelanggan = $idPelanggan";
+    $execHapusTransaksi = mysqli_query($conn, $queryHapusTransaksi);
+    if ($execHapusDetail && $execHapusTransaksi) {
+      // Hapus data pelanggan
+      $queryDeletePelanggan = "DELETE FROM tb_pelanggan WHERE `id` = $idPelanggan";
+      $execDeletePelanggan = mysqli_query($conn, $queryDeletePelanggan);
+      if ($execDeletePelanggan) {
+        $log = $_SESSION['nama'] . "  " . "(" . $_SESSION['role'] . ")" . "  " . "Telah Menghapus pelanggan. Dengan id pelanggan (" . $id . "). Pada Data Pelanggan.";
+        logger($log, "../../../../../");
+        echo "<script>alert('Pelanggan berhasil dihapus'); window.location.href='data_pelanggan.php';</script>";
+      }
+    }
+  } else {
+    // Jika tidak ada transaksi, langsung hapus data pelanggan
     $queryDeletePelanggan = "DELETE FROM tb_pelanggan WHERE `id` = $idPelanggan";
     $execDeletePelanggan = mysqli_query($conn, $queryDeletePelanggan);
     if ($execDeletePelanggan) {
       $log = $_SESSION['nama'] . "  " . "(" . $_SESSION['role'] . ")" . "  " . "Telah Menghapus pelanggan. Dengan id pelanggan (" . $id . "). Pada Data Pelanggan.";
       logger($log, "../../../../../");
-      header("location:data_pelanggan.php");
+      echo "<script>alert('Pelanggan berhasil dihapus'); window.location.href='data_pelanggan.php';</script>";
     }
   }
 }
@@ -45,45 +60,54 @@ if (isset($_POST['edit'])) {
   if ($execUpdatePelanggan) {
     $log = $_SESSION['nama'] . "  " . "(" . $_SESSION['role'] . ")" . "  " . "Telah Mengubah pelanggan. Dengan id pelanggan (" . $id . "). Pada Data Pelanggan.";
     logger($log, "../../../../../");
-    header("location:data_pelanggan.php");
+    echo "<script>alert('Pelanggan berhasil diupdate'); window.location.href='data_pelanggan.php';</script>";
   }
 }
 if (isset($_POST['simpan'])) {
-  $queryTambahPelanggan = "SELECT * FROM tb_pelanggan";
-  $execTambahPelanggan = mysqli_query($conn, $queryTambahPelanggan);
-  $dataTambahPelanggan = mysqli_fetch_array($execTambahPelanggan, MYSQLI_ASSOC);
   $nama = $_POST['nama'];
+  $namaArray = explode(' ', $nama);
+  $namaDepan = strtolower($namaArray[0]); // Ambil nama depan dan konversi ke huruf kecil
+  $username = $namaDepan;
+  $password = password_hash(1234, PASSWORD_ARGON2I);
   $alamat = $_POST['alamat'];
   $jenis_kelamin = $_POST['jenis_kelamin'];
   $tlp = $_POST['tlp'];
-  $insert = "INSERT INTO `tb_pelanggan` (`id`, `nama`, `alamat`, `jenis_kelamin`, `tlp`) VALUES (NULL, '$nama', '$alamat', '$jenis_kelamin', '$tlp');";
-  // var_dump($kode);
+  // Cek apakah username sudah ada, jika ada tambahkan angka
+  $queryCekUsername = "SELECT * FROM tb_pelanggan WHERE username LIKE '$username%'";
+  $execCekUsername = mysqli_query($conn, $queryCekUsername);
+  $jumlahUsernameSama = mysqli_num_rows($execCekUsername);
+  if ($jumlahUsernameSama > 0) {
+    $username = $username . ($jumlahUsernameSama + 1); // Tambahkan angka jika sudah ada
+  }
+  // Insert data ke database
+  $insert = "INSERT INTO `tb_pelanggan` (`id`, `nama`, `username`, `password`, `alamat`, `jenis_kelamin`, `tlp`) VALUES (NULL, '$nama', '$username', '$password', '$alamat', '$jenis_kelamin', '$tlp');";
   $sql = mysqli_query($conn, $insert);
-  // var_dump($dataTambahPelanggan);
   if ($sql) {
     $log = $_SESSION['nama'] . "  " . "(" . $_SESSION['role'] . ")" . "  " . "Telah Menambahkan pelanggan. Dengan nama pelanggan '" . $nama . "' . Pada Data Pelanggan.";
     logger($log, "../../../../../");
-    header("location:data_pelanggan.php");
+    echo "<script>alert('Pelanggan berhasil ditambahkan'); window.location.href='data_pelanggan.php';</script>";
+  }
+}
+if (isset($_POST['setPassDef'])) {
+  $id = $_POST['id'];
+  $passwordDefault = password_hash(1234, PASSWORD_ARGON2I);
+  $queryUpdateUser = "UPDATE tb_pelanggan SET `password` = '$passwordDefault' WHERE `tb_pelanggan`.`id` = $id";
+  $execUpdateUser = mysqli_query($conn, $queryUpdateUser);
+  if ($execUpdateUser) {
+    $log = $_SESSION['nama'] . "  " . "(" . $_SESSION['role'] . ")" . "  " . "Telah Men-setting password ke default. Dengan id pelanggan (" . $id . "). Pada Data Pelanggan.";
+    logger($log, "../../../../../");
+    echo "<script>alert('Password berhasil diatur ulang ke default'); window.location.href='data_pelanggan.php';</script>";
+  } else {
+    echo "<script>alert('Gagal mengatur ulang password'); window.location.href='data_pelanggan.php';</script>";
   }
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/main/app.css">
-  <link rel="stylesheet" href="../assets/css/main/app-dark.css">
-  <link rel="shortcut icon" href="../assets/images/logo/favicon.svg" type="image/x-icon">
-  <link rel="shortcut icon" href="../assets/images/logo/favicon.png" type="image/png">
-  <link rel="stylesheet" href="../assets/extensions/simple-datatables/style.css">
-  <link rel="stylesheet" href="../assets/css/pages/simple-datatables.css">
-
+  <?php include "head_css.php"; ?>
   <title>Data Pelanggan</title>
 </head>
-
 <body class="theme-dark" style="overflow-y: auto;">
   <div id="app">
     <?php include "sidebar.php" ?>
@@ -104,13 +128,13 @@ if (isset($_POST['simpan'])) {
                       <table class="table mb-3" id="table1">
                         <thead class="thead-dark">
                           <tr>
-                            <th>No</th>
+                          <th>No</th>
                             <th>Nama</th>
+                            <th>Username</th>
                             <th>Alamat</th>
-                            <th>Jenis Kelamin</th>
                             <th>No. Telepon</th>
-                            <th>Jumlah Transaksi</th>
-                            <th>Jumlah Hadiah</th>
+                            <th>Jmlh Transaksi</th>
+                            <th>Jmlh Hadiah</th>
                             <th>Aksi</th>
                           </tr>
                         </thead>
@@ -121,8 +145,8 @@ if (isset($_POST['simpan'])) {
                             <tr>
                               <td><?= $no ?></td>
                               <td><?= $pelanggan['nama'] ?></td>
+                              <td><?= $pelanggan['username'] ?></td>
                               <td><?= $pelanggan['alamat'] ?></td>
-                              <td><?= $pelanggan['jenis_kelamin'] ?></td>
                               <td><?= $pelanggan['tlp'] ?></td>
                               <td>
                                 <?php
@@ -145,7 +169,7 @@ if (isset($_POST['simpan'])) {
                                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                  </svg> UPDATE</a>
+                                  </svg></a>
                                 <div class="modal fade text-left" id="normal<?= $pelanggan['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
                                   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
                                     <div class="modal-content">
@@ -185,6 +209,10 @@ if (isset($_POST['simpan'])) {
                                             <input type="text" class="visually-hidden" value="<?= $pelanggan['id'] ?>" name="id">
                                             <i class="bx bx-check d-block d-sm-none"></i>
                                             <span class="d-none d-sm-block">Update</span>
+                                          </button>
+                                          <button type="submit" class="btn btn-primary ml-1" data-bs-dismiss="modal" name="setPassDef" onclick="return confirmReset()">
+                                            <i class="bx bx-check d-block d-sm-none"></i>
+                                            <span class="d-none d-sm-block">Set Password To Default</span>
                                           </button>
                                         </div>
                                       </form>
@@ -294,6 +322,10 @@ if (isset($_POST['simpan'])) {
   <script src="../assets/js/app.js"></script>
   <script src="../assets/extensions/simple-datatables/umd/simple-datatables.js"></script>
   <script src="../assets/js/pages/simple-datatables.js"></script>
+  <script>
+    function confirmReset() {
+      return confirm('Apakah Anda yakin ingin mengatur ulang kata sandi ke default pada user ini?');
+    }
+  </script>
 </body>
-
 </html>
