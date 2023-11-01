@@ -15,6 +15,14 @@ $idTransaksi = $_GET['idtransaksi'];
 $queryTransaksi = "SELECT * FROM tb_transaksi WHERE id = $idTransaksi";
 $execTransaksi = mysqli_query($conn, $queryTransaksi);
 $dataTransaksi = mysqli_fetch_assoc($execTransaksi);
+// ambil data pelayanan antar
+$queryLayanan = "SELECT * FROM tb_layanan WHERE layanan = 'antar'";
+$execLayanan = mysqli_query($conn, $queryLayanan);
+$dataLayanan = mysqli_fetch_assoc($execLayanan);
+// ambil data pelayanan jemput
+$queryLayananJ = "SELECT * FROM tb_layanan WHERE layanan = 'jemput'";
+$execLayananJ = mysqli_query($conn, $queryLayananJ);
+$dataLayananJ = mysqli_fetch_assoc($execLayananJ);
 //ambil data pelanggan
 $idPelanggan = $dataTransaksi['id_pelanggan'];
 $querypelanggan = "SELECT * FROM tb_pelanggan WHERE id = $idPelanggan";
@@ -28,6 +36,7 @@ $dataDetailTransaksi = mysqli_fetch_all($execDetailTransaksi, MYSQLI_ASSOC);
 $queryPaket = "SELECT * FROM tb_paket";
 $execPaket = mysqli_query($conn, $queryPaket);
 $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
+
 if ((!isset($_GET['idtransaksi']) || !isset($_GET['kode'])) || ($kode !== $dataTransaksi['kode_invoice'] || $idTransaksi !== $dataTransaksi['id'])) {
   header("Location: riwayat_transaksi.php");
   exit;
@@ -44,6 +53,18 @@ if ($dataTransaksi['dibayar'] == 'belum_dibayar') {
   $statusBadge  = "badge bg-primary";
 } if ($dataTransaksi['status'] == 'diambil') {
   $statusBadge  = "badge bg-success";
+} if ($dataTransaksi['status_antar'] == 'blm_diantar') {
+  $antarBadge  = "badge bg-danger";
+} if ($dataTransaksi['status_antar'] == 'diantar') {
+  $antarBadge  = "badge bg-success";
+} if ($dataTransaksi['status_antar'] == '') {
+  $antarBadge  = "badge bg-secondary";
+} if ($dataTransaksi['status_jemput'] == 'blm_dijemput') {
+  $jemputBadge  = "badge bg-danger";
+} if ($dataTransaksi['status_jemput'] == 'dijemput') {
+  $jemputBadge  = "badge bg-success";
+} if ($dataTransaksi['status_jemput'] == '') {
+  $jemputBadge  = "";
 }
 if ($dataTransaksi['dibayar'] == 'belum_dibayar') {
   $bayar = "Belum Dibayar";
@@ -57,76 +78,18 @@ if ($dataTransaksi['dibayar'] == 'belum_dibayar') {
   $status  = "Selesai";
 } if ($dataTransaksi['status'] == 'diambil') {
   $status  = "Diambil";
-}
-// Edit detail transaksi
-if (isset($_POST['simpan'])) {
-  // Ubah data tb transaksi
-  $pelanggan = $_POST['pelanggan'];
-  $tgl = $_POST['tgl'];
-  $batastgl = $_POST['batastgl'];
-  $tglbayar = $_POST['tglbayar'];
-  $status = $_POST['status'];
-  $status_bayar = $_POST['status_bayar'];
-  if ($tgl == '0000-00-00 00:00:00') {
-    exit;
-  }
-  $queryEditData = "UPDATE `tb_transaksi` SET `id_pelanggan` = '$pelanggan', `tgl` = '$tgl', `batas_waktu` = '$batastgl', `tgl_bayar` = '$tglbayar', `status` = '$status', `dibayar` = '$status_bayar' WHERE `tb_transaksi`.`id` = $idTransaksi;";
-  $execEditData = mysqli_query($conn, $queryEditData);
-  // Ubah data tb detail transaksi
-  $jumlahPaketDipesan = [];
-  $kuan = [];
-  foreach ($dataDetailTransaksi as $detail) {
-    foreach ($dataPaket as $paket) {
-      if ($detail['id_paket'] == $paket['id']) {
-        $jumlahPaketDipesan[] += $paket['id'];
-        $kuan[] += $detail['qty'];
-      }
-    }
-  }
-  // Cek sudah ada isinya tau belum,
-  $jumlahRow = mysqli_num_rows($execDetailTransaksi);
-  $jumlahPaket = mysqli_num_rows($execPaket);
-  foreach ($dataDetailTransaksi as $detail) {
-    // Jika sudah, ganti isinya dengan yang baru
-    foreach ($dataPaket as $paket) {
-      if ($paket['id'] == $detail['id_paket']) {
-        $idPaket = $paket['id'];
-        $qty = $_POST['qty' . "$idPaket"];
-        $keterangan = $_POST['ket' . "$idPaket"];
-        if ($detail['qty'] !== $qty) {
-          $queryUpdate = "UPDATE `tb_detail_transaksi` SET `qty` = '$qty', `keterangan` = '$keterangan' WHERE id_paket = $idPaket AND id_transaksi = $idTransaksi";
-          $execUpdate = mysqli_query($conn, $queryUpdate);
-        }
-      } else {
-        continue;
-      }
-    }
-    // Jika belum ada, masukan data tersebut dgn insert
-    foreach ($dataPaket as $paket) {
-      // global $idTransaksi;
-      $idPaket = $paket['id'];
-      $queryPilih = "SELECT * FROM tb_detail_transaksi WHERE id_paket = $idPaket AND id_transaksi = $idTransaksi";
-      $execPilih = mysqli_query($conn, $queryPilih);
-      $jumlahPilih = mysqli_num_rows($execPilih);
-      if ($paket['id'] !== $detail['id_paket']) {
-        $idPaket = $paket['id'];
-        $qty = $_POST['qty' . "$idPaket"];
-        $keterangan = $_POST['ket' . "$idPaket"];
-        if ($qty !== 0 && $jumlahPilih == 0) {
-          $queryTambahPesanan = "INSERT INTO `tb_detail_transaksi` (`id`, `id_transaksi`, `id_paket`, `qty`, `keterangan`) VALUES (NULL, '$idTransaksi', '$idPaket', '$qty', '$keterangan')";
-          $execTambahPesanan = mysqli_query($conn, $queryTambahPesanan);
-        }
-      }
-    }
-  }
-  foreach ($dataPaket as $paket) {
-    $idPaket = $paket['id'];
-    $queryDeleteBug = "DELETE FROM tb_detail_transaksi WHERE id_transaksi = $idTransaksi AND qty = 0";
-    $execDeleteBug = mysqli_query($conn, $queryDeleteBug);
-  }
-  if ($queryUpdate || $queryTambahPesanan) {
-    header("location: detail.php?idtransaksi=$idTransaksi&kode=$kode");
-  }
+} if ($dataTransaksi['status_antar'] == 'blm_diantar') {
+  $antar  = "Belum Antar";
+} if ($dataTransaksi['status_antar'] == 'diantar') {
+  $antar  = "Diantar";
+} if ($dataTransaksi['status_antar'] == '') {
+  $antar  = "-";
+} if ($dataTransaksi['status_jemput'] == 'blm_dijemput') {
+  $jemput  = "Belum Jemput";
+} if ($dataTransaksi['status_jemput'] == 'dijemput') {
+  $jemput  = "Dijemput";
+} if ($dataTransaksi['status_jemput'] == '') {
+  $jemput  = "";
 }
 ?>
 <!DOCTYPE html>
@@ -159,12 +122,22 @@ if (isset($_POST['simpan'])) {
                 <div class="card">
                   <div class="card-header">
                     <div class="row col-12">
-                      <div class="col-9">
+                      <div class="col-6">
                         <h4 class="card-title"> Detail Transaksi</h4>
                       </div>
-                      <div class="float-end col-auto mb-0 pb-0">
-                        <span class="<?= $bayarBadge ?>"><?= $bayar ?></span>
-                        <span class="<?= $statusBadge ?>"><?= $status ?></span>
+                    </div>
+                    <div class="row col-12">
+                      <div class="col-12">
+                        <div class="float-end col-auto mb-0 pb-0">
+                          <span class="<?= $bayarBadge ?>"><?= $bayar ?></span>
+                          <span class="<?= $statusBadge ?>"><?= $status ?></span>
+                          <?php if ($antarBadge != ''): ?>
+                            <span class="<?= $antarBadge ?>"><?= $antar ?></span>
+                          <?php endif; ?>
+                          <?php if ($jemputBadge != ''): ?>
+                            <span class="<?= $jemputBadge ?>"><?= $jemput ?></span>
+                          <?php endif; ?>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -172,37 +145,79 @@ if (isset($_POST['simpan'])) {
                     <div class="card-body">
                       <div class="card-body">
                         <div class="row">
-                          <div class="col-sm-5">
-                            <div class="form-group">
-                              <table class="table">
-                                <tbody>
-                                  <tr>
-                                    <td>No Invoice</td>
-                                    <td>: <?= $kode ?> </td>
-                                    <input type="hidden" name="kode_invoice" id="kode_invoice" value="<?= $kode ?>">
-                                  </tr>
-                                  <tr>
-                                    <td>Tanggal Transaksi</td>
-                                    <td>: <?= $dataTransaksi['tgl'] ?></td>
-                                  </tr>
-                                  <tr>
-                                    <td>Pelanggan</td>
-                                    <td>: <?= $dataPelanggan['nama'] ?></td>
-                                  </tr>
-                                  <tr>
-                                    <td>No Telp</td>
-                                    <td>: <?= $dataPelanggan['tlp'] ?></td>
-                                  </tr>
-                                  <tr>
-                                    <td>Alamat</td>
-                                    <td>: <?= $dataPelanggan['alamat'] ?></td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
+                        <div class="col-sm-6">
+                          <div class="form-group">
+                            <table class="table">
+                              <tbody>
+                                <tr>
+                                  <td>No Invoice</td>
+                                  <td>: <?= $kode ?> </td>
+                                </tr>
+                                <tr>
+                                  <td>Pelanggan</td>
+                                  <td>: <?= $dataPelanggan['nama'] ?></td>
+                                </tr>
+                                <tr>
+                                  <td>Username</td>
+                                  <td>: <?= $dataPelanggan['username'] ?></td>
+                                </tr>
+                                <tr>
+                                  <td>No. Telp</td>
+                                  <td>: <?= $dataPelanggan['tlp'] ?></td>
+                                </tr>
+                                <tr>
+                                  <td>Pelanggan</td>
+                                  <td>: <?= $dataPelanggan['alamat'] ?></td>
+                                </tr>
+                                <tr>
+                                  <td>Kasir</td>
+                                  <?php
+                                  $id_kasir = $dataTransaksi['id_user'];
+                                  // Ambil data kasir berdasarkan id_kasir
+                                  $queryKasir = "SELECT * FROM user WHERE id = $id_kasir";
+                                  $execKasir = mysqli_query($conn, $queryKasir);
+                                  $dataKasir = mysqli_fetch_assoc($execKasir);
+                                  // Tampilkan nama kasir
+                                  $namaKasir = ($dataKasir) ? $dataKasir['nama'] : 'Tidak Diketahui';
+                                  ?>
+                                  <td>: <?= $namaKasir ?></td>
+                                </tr>
+                              </tbody>
+                            </table>
                           </div>
-                          <div class="col-sm-8">
+                        </div>
+                        <div class="col-sm-6">
+                          <div class="form-group">
+                            <table class="table">
+                              <tbody>
+                                <tr>
+                                  <td>Tanggal Transaksi</td>
+                                  <td>: <?= $dataTransaksi['tgl'] ?></td>
+                                </tr>
+                                <tr>
+                                  <td>Batas Tanggal</td>
+                                  <td>: <?= $dataTransaksi['batas_waktu'] ?></td>
+                                </tr>
+                                <tr>
+                                  <td>Status Bayar</td>
+                                  <td>: <?= $dataTransaksi['dibayar'] ?></td>
+                                </tr>
+                                <tr>
+                                  <td>Status Paket</td>
+                                  <td>: <?= $dataTransaksi['status'] ?></td>
+                                </tr>
+                                <tr>
+                                  <td>Layanan Antar</td>
+                                  <td>: <?= $dataTransaksi['layanan_antar'] ?></td>
+                                </tr>
+                                <tr>
+                                  <td>Layanan Jemput</td>
+                                  <td>: <?= $dataTransaksi['layanan_jemput'] ?></td>
+                                </tr>
+                              </tbody>
+                            </table>
                           </div>
+                        </div>  
                         </div>
                         <div>
                           <div class="col-sm-12">
@@ -243,8 +258,6 @@ if (isset($_POST['simpan'])) {
                               </tbody>
                             </table>
                           </div>
-                          <!-- Tombol cetak invoice -->
-                          <a href="cetak_detail.php?idtransaksi=<?= $idTransaksi ?>&kode=<?= $kode ?>"><button class="btn btn-danger" type="button">Cetak Invoice</button></a>
                         </div>
                       </div>
                     </div>
@@ -260,4 +273,5 @@ if (isset($_POST['simpan'])) {
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
 </body>
+
 </html>

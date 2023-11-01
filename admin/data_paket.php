@@ -5,9 +5,15 @@ if (empty($_SESSION['loginadmin'])) {
   header("Location: ../index.php");
 }
 $page = "data_paket";
+// data paket
 $queryPaket = "SELECT * FROM tb_paket";
 $execPaket = mysqli_query($conn, $queryPaket);
 $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
+// data layanan
+$queryLayanan = "SELECT * FROM tb_layanan";
+$execLayanan = mysqli_query($conn, $queryLayanan);
+$dataLayanan = mysqli_fetch_all($execLayanan, MYSQLI_ASSOC);
+// logika paket
 if (isset($_GET['delete'])) {
   $id = $_GET['delete'];
   $queryDeletePaket = "DELETE FROM tb_paket WHERE `tb_paket`.`id` = $id";
@@ -46,18 +52,32 @@ if (isset($_POST['simpan'])) {
     header("location:data_paket.php");
   }
 }
+// logika paket
+if (isset($_POST['edit_layanan'])) {
+  $id = $_POST['id'];
+  $layanan = $_POST['layanan'];
+  $harga = $_POST['harga'];
+  $queryUpdateLayanan = "UPDATE tb_layanan SET `layanan` = '$layanan', `harga`='$harga' WHERE `tb_layanan`.`id` = $id";
+  $execUpdateLayanan = mysqli_query($conn, $queryUpdateLayanan);
+  if ($execUpdateLayanan) {
+    $log = $_SESSION['nama'] . "  " . "(" . $_SESSION['role'] . ")" . "  " . "Telah Mengubah layanan. Dengan id layanan (" . $id . "). Pada Data Layanan.";
+    logger($log, "../../../../../");
+    header("location:data_paket.php");
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <?php include "head_css.php"; ?>
-  <title>Cetak Data Paket</title>
+  <title>Cetak Data Paket & Layanan</title>
 </head>
 <body class="theme-dark" style="overflow-y: auto;">
   <div id="app">
     <?php include "sidebar.php" ?>
   </div>
   <div id="main">
+    <!-- PAKET -->
     <div class="page-heading">
       <div class="page-title">
         <div class="row">
@@ -91,10 +111,7 @@ if (isset($_POST['simpan'])) {
                               <td><?= $paket['harga'] ?></td>
                               <td>
                                 <a href="" class="btn icon icon-left btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#normal<?= $paket['id']; ?>">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                  </svg> UPDATE</a>
+                                <i class="bi bi-pencil-square"></i> UPDATE</a>
                                 <div class="modal fade text-left" id="normal<?= $paket['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
                                   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
                                     <div class="modal-content">
@@ -137,7 +154,7 @@ if (isset($_POST['simpan'])) {
                                     </div>
                                   </div>
                                 </div>
-                                <a href="?delete=<?= $paket['id'] ?>" class="btn icon icon-left btn-danger"><i class="bi bi-x"></i>
+                                <a href="?delete=<?= $paket['id'] ?>" class="btn icon icon-left btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus paket ini?')"><i class="bi bi-x"></i>
                                   DELETE</a>
                               </td>
                             </tr>
@@ -169,6 +186,8 @@ if (isset($_POST['simpan'])) {
                                   <option value="bed_cover">Bed Cover</option>
                                   <option value="kaos">Kaos</option>
                                   <option value="lain">Lainnya</option>
+                                  <option value="antar">Antar</option>
+                                  <option value="jemput">Jemput</option>
                                 </select>
                               </div>
                               <label>Nama Paket : </label>
@@ -194,6 +213,91 @@ if (isset($_POST['simpan'])) {
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYANAN -->
+    <div class="page-heading">
+      <div class="page-title">
+        <div class="row">
+          <section class="section">
+            <div class="row" id="table-head">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h4 class="card-title">Daftar Layanan</h4>
+                  </div>
+                  <div class="card-content">
+                    <div class="table-responsive">
+                      <table class="table mb-3" id="table1">
+                        <thead class="thead-dark">
+                          <tr>
+                            <th>No</th>
+                            <th>Layanan</th>
+                            <th>Harga</th>
+                            <th>Aksi</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <?php $no = 0 ?>
+                          <?php foreach ($dataLayanan as $layanan) : ?>
+                            <?php $no++ ?>
+                            <tr>
+                              <td><?= $no ?></td>
+                              <td><?= $layanan['layanan'] ?></td>
+                              <td><?= $layanan['harga'] ?></td>
+                              <td>
+                                <a href="" class="btn icon icon-left btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#update_lay<?= $layanan['id']; ?>">
+                                <i class="bi bi-pencil-square"></i>UPDATE</a>
+                                <div class="modal fade text-left" id="update_lay<?= $layanan['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+                                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h4 class="modal-title" id="myModalLabel33">Update Layanan</h4>
+                                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                          <i data-feather="x"></i>
+                                        </button>
+                                      </div>
+                                      <form action="" method="post">
+                                        <div class="modal-body">
+                                          <label>Nama Paket : </label>
+                                          <div class="form-group">
+                                            <input type="text" placeholder="Nama Layanan" class="form-control" name="layanan" value="<?= $layanan['layanan'] ?>" readonly>
+                                          </div>
+                                          <label>Harga: </label>
+                                          <div class=" form-group">
+                                            <input type="text" placeholder="Harga" class="form-control" name="harga" value="<?= $layanan['harga'] ?>">
+                                          </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                          <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                                            <i class="bx bx-x d-block d-sm-none"></i>
+                                            <span class="d-none d-sm-block">Close</span>
+                                          </button>
+                                          <button type="submit" class="btn btn-primary ml-1" data-bs-dismiss="modal" name="edit_layanan" value="EDIT DATA">
+                                            <input type="text" class="visually-hidden" value="<?= $layanan['id'] ?>" name="id">
+                                            <i class="bx bx-check d-block d-sm-none"></i>
+                                            <span class="d-none d-sm-block">Update</span>
+                                          </button>
+                                        </div>
+                                      </form>
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          <?php endforeach; ?>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="card-footer d-flex justify-content-between">
                   </div>
                 </div>
               </div>

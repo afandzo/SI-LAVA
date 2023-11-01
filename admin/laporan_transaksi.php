@@ -85,17 +85,23 @@ if (isset($_POST['cari'])) {
                 <div class="table-responsive">
                   <table class="table mb-3" id="table1">
                     <tr>
-                      <th class="col-1">No</th>
-                      <th class="col-2">Tanggal</th>
-                      <th class="col-2">Kode Invoice</th>
-                      <th class="col-1">Pelanggan</th>
-                      <th class="col-3 ">Layanan</th>
-                      <th class="col-2">Total Biyaya</th>
+                      <th>No</th>
+                      <th>Tanggal</th>
+                      <th>Kode Invoice</th>
+                      <th>Pelanggan</th>
+                      <th>Layanan</th>
+                      <th>Total Paket</th>
+                      <th>Antar</th>
+                      <th>Jemput</th>
+                      <th>Total Akhir</th>
                     </tr>
-                    <?php $no = 1; ?>
-                    <?php $i = 0; ?>
-                    <?php $b = 0; ?>
-                    <?php $bayar = []; ?>
+                    <?php $no = 1; 
+                      $i = 0; 
+                      $b = 0; 
+                      $bayar = [];
+                      $totalAntar = 0;
+                      $totalJemput = 0;
+                      ?>
                     <?php foreach ($listQuery as $query) {
                       // Detail Transaksi
                       $execQuery = mysqli_query($conn, $query);
@@ -153,9 +159,16 @@ if (isset($_POST['cari'])) {
                           </ul>
                         </td>
                         <td>Rp. <?= $bayar[$i]; ?></td>
+                        <td>Rp. <?= $dataTransaksiSatu['layanan_antar']; ?></td>
+                        <td>Rp. <?= $dataTransaksiSatu['layanan_jemput']; ?></td>
+                        <td>Rp. <?= $bayar[$i] + $dataTransaksiSatu['layanan_antar'] + $dataTransaksiSatu['layanan_jemput']; ?></td>
                       </tr>
-                      <?php $i++ ?>
-                      <?php $no++ ?>
+                      <?php
+                      $totalAntar += $dataTransaksiSatu['layanan_antar']; // Tambahkan total antar
+                      $totalJemput += $dataTransaksiSatu['layanan_jemput']; // Tambahkan total jemput                    
+                      $i++;
+                      $no++; 
+                      ?>
                     <?php } ?>
                     <?php $totalHarga?>
                     <?php foreach ($bayar as $tes) {
@@ -163,8 +176,11 @@ if (isset($_POST['cari'])) {
                     }
                     ?>
                     <tr>
-                      <td colspan="5">Total</td>
-                      <td>Rp. <?= $totalHarga ?></td>
+                    <td colspan="5">Total</td>
+                    <td>Rp. <?= $totalHarga ?></td>
+                    <td>Rp. <?= $totalAntar ?></td>
+                    <td>Rp. <?= $totalJemput ?></td>
+                    <td>Rp. <?= $totalHarga + $totalAntar + $totalJemput ?></td>
                     </tr>
                   </table>
                 </div>

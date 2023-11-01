@@ -8,79 +8,15 @@ $queryUser = "SELECT * FROM user";
 $execUser = mysqli_query($conn, $queryUser);
 $dataUser = mysqli_fetch_all($execUser, MYSQLI_ASSOC);
 // Harian
-$queryTransaksiHarian = "SELECT * FROM tb_transaksi WHERE  cast(tgl AS Date) = CURRENT_DATE";
+$queryTransaksiHarian = "SELECT SUM(total_harga) as total FROM tb_transaksi WHERE CAST(tgl AS DATE) = CURRENT_DATE";
 $execTransaksiHarian = mysqli_query($conn, $queryTransaksiHarian);
-$dataTransaksiHarian = mysqli_fetch_all($execTransaksiHarian, MYSQLI_ASSOC);
-$queryPaket = "SELECT * FROM tb_paket";
-$execPaket = mysqli_query($conn, $queryPaket);
-$dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
-
-$idTransaksiHarian = [];
-foreach ($dataTransaksiHarian as $harian) {
-  $idTransaksiHarian[] += $harian['id'];
-}
-$queryHarian = [];
-foreach ($idTransaksiHarian as $harian) {
-  $idHarian = $harian;
-  $queryHarian[] .= "SELECT * FROM tb_detail_transaksi WHERE id_transaksi = $idHarian";
-}
-$totalHarian = 0;
-foreach ($queryHarian as $query) {
-  $execQuery = mysqli_query($conn, $query);
-  $dataHarian = mysqli_fetch_all($execQuery, MYSQLI_ASSOC);
-  $qty = [];
-  $pesananPaket = [];
-  foreach ($dataHarian as $Harian) {
-    $pesananPaket[] += $Harian['id_paket'];
-    $qty[] += $Harian['qty'];
-  }
-  $a = 0;
-  foreach ($pesananPaket as $paket) {
-    foreach ($dataPaket as $pkt) {
-      $idPaket = $pkt['id'];
-      if ($paket == $idPaket) {
-        $totalHarian += $qty[$a] * $pkt['harga'];
-        $a++;
-      }
-    }
-  }
-}
+$dataTransaksiHarian = mysqli_fetch_assoc($execTransaksiHarian);
+$totalHarian = $dataTransaksiHarian['total'] ?? 0;
 // Bulanan
-$queryTransaksiBulanan = 'SELECT * FROM tb_transaksi WHERE Date_format(tgl, "%m") = DATE_FORMAT(CURRENT_DATE, "%m")';
+$queryTransaksiBulanan = 'SELECT SUM(total_harga) as total FROM tb_transaksi WHERE DATE_FORMAT(tgl, "%m") = DATE_FORMAT(CURRENT_DATE, "%m")';
 $execTransaksiBulanan = mysqli_query($conn, $queryTransaksiBulanan);
-$dataTransaksiBulanan = mysqli_fetch_all($execTransaksiBulanan, MYSQLI_ASSOC);
-
-$idTransaksiBulanan = [];
-foreach ($dataTransaksiBulanan as $bulanan) {
-  $idTransaksiBulanan[] += $bulanan['id'];
-}
-// var_dump($idTransaksiBulanan);
-$queryBulanan = [];
-foreach ($idTransaksiBulanan as $bulanan) {
-  $idBulanan = $bulanan;
-  $queryBulanan[] .= "SELECT * FROM tb_detail_transaksi WHERE id_transaksi = $idBulanan";
-}
-$totalBulanan = 0;
-foreach ($queryBulanan as $query) {
-  $execQuery = mysqli_query($conn, $query);
-  $dataBulanan = mysqli_fetch_all($execQuery, MYSQLI_ASSOC);
-  $qty = [];
-  $pesananPaket = [];
-  foreach ($dataBulanan as $bulanan) {
-    $pesananPaket[] += $bulanan['id_paket'];
-    $qty[] += $bulanan['qty'];
-  }
-  $a = 0;
-  foreach ($pesananPaket as $paket) {
-    foreach ($dataPaket as $pkt) {
-      $idPaket = $pkt['id'];
-      if ($paket == $idPaket) {
-        $totalBulanan += $qty[$a] * $pkt['harga'];
-        $a++;
-      }
-    }
-  }
-}
+$dataTransaksiBulanan = mysqli_fetch_assoc($execTransaksiBulanan);
+$totalBulanan = $dataTransaksiBulanan['total'] ?? 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">

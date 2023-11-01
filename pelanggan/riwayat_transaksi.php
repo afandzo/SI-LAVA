@@ -5,19 +5,15 @@ if (empty($_SESSION['loginpelanggan'])) {
   header("Location: ../index.php");
 }
 $page = "riwayat_transaksi";
-// Ambil id_pelanggan dari session
+//ambil data transaksi
 $id_pelanggan = $_SESSION['id'];
-// Ambil data transaksi hanya untuk pelanggan yang login
 $queryTransaksi = "SELECT * FROM tb_transaksi WHERE id_pelanggan = $id_pelanggan ORDER BY id DESC";
 $execTransaksi = mysqli_query($conn, $queryTransaksi);
 $dataTransaksi = mysqli_fetch_all($execTransaksi, MYSQLI_ASSOC);
-// Ambil data detail transaksi yang terkait dengan transaksi pelanggan yang login
-$queryDetailTransaksi = "SELECT dt.* FROM tb_detail_transaksi dt
-                        JOIN tb_transaksi t ON dt.id_transaksi = t.id
-                        WHERE t.id_pelanggan = $id_pelanggan";
+//ambil data detail transaksi
+$queryDetailTransaksi = "SELECT * FROM tb_detail_transaksi";
 $execDetailTransaksi = mysqli_query($conn, $queryDetailTransaksi);
 $dataDetailTransaksi = mysqli_fetch_all($execDetailTransaksi, MYSQLI_ASSOC);
-
 $querryPaket = "SELECT * FROM tb_paket";
 $execPaket = mysqli_query($conn, $querryPaket);
 $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
@@ -63,8 +59,10 @@ if (isset($_POST['hps'])) {
                             <th>Kode Invoice</th>
                             <th>Pelanggan</th>
                             <th>Total Biaya</th>
-                            <th>Status</th>
                             <th>Pembayaran</th>
+                            <th>Status</th>
+                            <th>Antar</th>
+                            <th>Jemput</th>
                             <th>Aksi</th>
                           </tr>
                         </thead>
@@ -75,39 +73,54 @@ if (isset($_POST['hps'])) {
                             <?php
                             if ($transaksi['dibayar'] == 'belum_dibayar') {
                               $bayarBadge = "badge bg-danger";
-                            }
-                            if ($transaksi['dibayar'] == 'dibayar') {
+                            } if ($transaksi['dibayar'] == 'dibayar') {
                               $bayarBadge  = "badge bg-success";
-                            }
-                            if ($transaksi['status'] == 'baru') {
+                            } if ($transaksi['status'] == 'baru') {
                               $statusBadge  = "badge bg-secondary";
-                            }
-                            if ($transaksi['status'] == 'proses') {
+                            } if ($transaksi['status'] == 'proses') {
                               $statusBadge  = "badge bg-info";
-                            }
-                            if ($transaksi['status'] == 'selesai') {
+                            } if ($transaksi['status'] == 'selesai') {
                               $statusBadge  = "badge bg-primary";
-                            }
-                            if ($transaksi['status'] == 'diambil') {
+                            } if ($transaksi['status'] == 'diambil') {
                               $statusBadge  = "badge bg-success";
+                            } if ($transaksi['status_antar'] == 'blm_diantar') {
+                              $antarBadge  = "badge bg-danger";
+                            } if ($transaksi['status_antar'] == 'diantar') {
+                              $antarBadge  = "badge bg-success";
+                            } if ($transaksi['status_antar'] == '') {
+                              $antarBadge  = "badge bg-secondary";
+                            } if ($transaksi['status_jemput'] == 'blm_dijemput') {
+                              $jemputBadge  = "badge bg-danger";
+                            } if ($transaksi['status_jemput'] == 'dijemput') {
+                              $jemputBadge  = "badge bg-success";
+                            } if ($transaksi['status_jemput'] == '') {
+                              $jemputBadge  = "badge bg-secondary";
                             }
+
                             if ($transaksi['dibayar'] == 'belum_dibayar') {
-                              $bayar = "Belum Dibayar";
-                            }
-                            if ($transaksi['dibayar'] == 'dibayar') {
+                              $bayar = "Blm Dibayar";
+                            } if ($transaksi['dibayar'] == 'dibayar') {
                               $bayar  = "Dibayar";
-                            }
-                            if ($transaksi['status'] == 'baru') {
+                            } if ($transaksi['status'] == 'baru') {
                               $status  = "Baru";
-                            }
-                            if ($transaksi['status'] == 'proses') {
+                            } if ($transaksi['status'] == 'proses') {
                               $status  = "Proses";
-                            }
-                            if ($transaksi['status'] == 'selesai') {
+                            } if ($transaksi['status'] == 'selesai') {
                               $status  = "Selesai";
-                            }
-                            if ($transaksi['status'] == 'diambil') {
+                            } if ($transaksi['status'] == 'diambil') {
                               $status  = "Diambil";
+                            } if ($transaksi['status_antar'] == 'blm_diantar') {
+                              $antar  = "Blm Antar";
+                            } if ($transaksi['status_antar'] == 'diantar') {
+                              $antar  = "Diantar";
+                            } if ($transaksi['status_antar'] == '') {
+                              $antar  = "-";
+                            } if ($transaksi['status_jemput'] == 'blm_dijemput') {
+                              $jemput  = "Blm Jemput";
+                            } if ($transaksi['status_jemput'] == 'dijemput') {
+                              $jemput  = "DiJemput";
+                            } if ($transaksi['status_jemput'] == '') {
+                              $jemput  = "-";
                             }
                             ?>
                             <tr>
@@ -124,33 +137,14 @@ if (isset($_POST['hps'])) {
                                 <?= $namaPelanggan ?>
                               </td>
                               <td>
-                                <?php
-                                $idTransaksi = $transaksi['id'];
-                                $queryAmbil = "SELECT * FROM tb_detail_transaksi WHERE id_transaksi = $idTransaksi";
-                                $execAmbil = mysqli_query($conn, $queryAmbil);
-                                $dataAmbil = mysqli_fetch_all($execAmbil, MYSQLI_ASSOC);
-                                $total = [];
-                                foreach ($dataAmbil as $ambil) {
-                                  $qty = $ambil['qty'];
-                                  $idPaket = $ambil['id_paket'];
-                                  $queryHarga = "SELECT * FROM tb_paket WHERE id = $idPaket";
-                                  $execHarga = mysqli_query($conn, $queryHarga);
-                                  $dataHarga = mysqli_fetch_assoc($execHarga);
-                                  $total[] += $dataHarga['harga'] * $qty;
-                                }
-                                $jumlah = count($total);
-                                $hargaA = "0";
-                                $hargaA;
-                                for ($i = 0; $i < $jumlah; $i++) {
-                                  $hargaA += $total[$i];
-                                }
-                                ?>
-                                <?= $hargaA ?>
+                                <?= $transaksi['total_harga'] ?>
                               </td>
                               <td><span class="<?= $bayarBadge ?>"><?= $bayar ?></span></td>
                               <td><span class="<?= $statusBadge ?>"><?= $status ?></span></td>
+                              <td><span class="<?= $antarBadge ?>"><?= $antar ?></span></td>
+                              <td><span class="<?= $jemputBadge ?>"><?= $jemput ?></span></td>
                               <td>
-                                <a href="detail.php?idtransaksi=<?= $transaksi['id'] ?>&kode=<?= $transaksi['kode_invoice'] ?>" class="btn icon icon-left btn-primary" type="button">
+                                <a href="detail.php?idtransaksi=<?= $transaksi['id'] ?>&kode=<?= $transaksi['kode_invoice'] ?>" class="btn icon icon-left btn-primary " type="button">
                                 <i class="bi bi-search"></i></a>
                                 <div class="modal fade text-left" id="defaultSize<?= $transaksi['id'] ?>" tabindex="-1" aria-labelledby="myModalLabel18" aria-hidden="true" style="display: none;">
                                   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
@@ -191,8 +185,7 @@ if (isset($_POST['hps'])) {
                     </div>
                   </div>
                   <div class="card-footer d-flex justify-content-between">
-                    <a href="transaksi.php" class="btn icon icon-left btn-success"><i class="bi bi-person-plus-fill"></i>
-                      TAMBAH</a>
+                    <a href="transaksi.php" class="btn icon icon-left btn-success"><i class="bi bi-person-plus-fill"></i>TAMBAH</a>
                   </div>
                 </div>
               </div>

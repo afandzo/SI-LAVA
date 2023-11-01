@@ -9,12 +9,12 @@ $page = "transaksi";
 $queryTransaksi = "SELECT * FROM tb_transaksi";
 $execTransaksi = mysqli_query($conn, $queryTransaksi);
 $dataTransaksi = mysqli_fetch_all($execTransaksi, MYSQLI_ASSOC);
-//ambil data pelanggan
+//ambil data kasir
 $queryKasir = "SELECT * FROM user WHERE role = 'kasir'";
 $execKasir = mysqli_query($conn, $queryKasir);
 $dataKasir = mysqli_fetch_all($execKasir, MYSQLI_ASSOC);
 // Ambil data paket
-$queryPaket = "SELECT * FROM tb_paket";
+$queryPaket = "SELECT * FROM tb_paket LIMIT 1";
 $execPaket = mysqli_query($conn, $queryPaket);
 $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
 
@@ -34,15 +34,20 @@ if (isset($_POST['simpan'])) {
   $queryTambah = "SELECT * FROM tb_transaksi";
   $execTambah = mysqli_query($conn, $queryTambah);
   $dataTambah = mysqli_fetch_array($execTambah, MYSQLI_ASSOC);
+  $nama_pelanggan = $_POST['nama_plgn'];
   $kode = $_POST['random'];
   $tgl = $_POST['tgl'];
   $batas_waktu = $_POST['batas_waktu'];
   $tgl_bayar = null;
   $status = 'baru';
   $status_bayar = 'belum_dibayar';
-  $id_kasir = $_POST['kasir'];
-  $id_pelanggan = $_SESSION['id'];
-  $insert = "INSERT INTO `tb_transaksi` (`id`, `kode_invoice`, `id_pelanggan`, `tgl`, `batas_waktu`, `tgl_bayar`, `diskon`, `status`, `dibayar`, `id_user`) VALUES (NULL, '$kode', '$id_pelanggan', '$tgl', '$batas_waktu', '$tgl_bayar', '', '$status', '$status_bayar', '$id_kasir');";
+  $layanan_antar = $_POST['layanan_antar'];
+  $status_antar = ($layanan_antar == '0') ? null : 'blm_diantar';
+  $layanan_jemput = $_POST['layanan_jemput'];;
+  $status_jemput = ($layanan_jemput == '0') ? null : 'blm_dijemput';
+  $total_harga = 0;
+  $iduser = $_POST['kasir'];
+  $insert = "INSERT INTO `tb_transaksi` (`id`, `kode_invoice`, `id_pelanggan`, `tgl`, `batas_waktu`, `tgl_bayar`, `diskon`, `status`, `dibayar`, `layanan_antar`, `status_antar`, `layanan_jemput`, `status_jemput`, `total_harga`, `id_user`) VALUES (NULL, '$kode', '$nama_pelanggan', '$tgl', '$batas_waktu', '$tgl_bayar', '', '$status', '$status_bayar', '$layanan_antar', '$status_antar', '$layanan_jemput', '$status_jemput', '$total_harga', '$iduser');";
   $sql = mysqli_query($conn, $insert);
 
   $kode = $_POST['random'];
@@ -54,8 +59,8 @@ if (isset($_POST['simpan'])) {
     foreach ($dataPaket as $paket) {
       $namaPaket = $paket['nama_paket'];
       $idPaket = $paket['id'];
-      $qty = $_POST["qty" . "$idPaket"];
-      $keterangan = $_POST["keterangan" . "$idPaket"];
+      $qty = "";
+      $keterangan = "";
       if ($qty > 0) {
         $queryTambah = "INSERT INTO tb_detail_transaksi (id, id_transaksi, id_paket, qty, keterangan) VALUES (NULL, '$idTransaksi', '$idPaket', '$qty', '$keterangan');";
         $execTambah = mysqli_query($conn, $queryTambah);
@@ -64,16 +69,16 @@ if (isset($_POST['simpan'])) {
     if ($execTambah) {
       echo "<script>alert('Transaksi Berhasil');</script>";
       // Check if the customer has reached 10 transactions
-      $queryCountTransactions = "SELECT COUNT(*) AS total FROM tb_transaksi WHERE id_pelanggan = '$id_pelanggan'";
+      $queryCountTransactions = "SELECT COUNT(*) AS total FROM tb_transaksi WHERE id_pelanggan = '$nama_pelanggan'";
       $execCountTransactions = mysqli_query($conn, $queryCountTransactions);
       $dataCountTransactions = mysqli_fetch_assoc($execCountTransactions);
       $totalTransactions = $dataCountTransactions['total'];
       if ($totalTransactions % 10 == 0) {
-        $customerQuery = "SELECT nama FROM tb_pelanggan WHERE id = '$id_pelanggan'";
+        $customerQuery = "SELECT nama FROM tb_pelanggan WHERE id = '$nama_pelanggan'";
         $customerResult = mysqli_query($conn, $customerQuery);
         $customerData = mysqli_fetch_assoc($customerResult);
         $customerName = $customerData['nama'];
-        echo "<script>alert('Selamat! Kepada Pelanggan `" . $customerName . "` mendapatkan hadiah.');</script>";
+        echo "<script>alert('Selamat! Pelanggan " . $customerName . " mendapatkan hadiah.');</script>";
     }
     } else {
       echo "
@@ -128,7 +133,7 @@ if (isset($_POST['simpan'])) {
                           <div class="col-md-6 col-12">
                             <div class="form-group">
                               <label for="tanggal">Tanggal</label>
-                              <input type="datetime-local" id="tanggal" class="form-control" placeholder="Tanggal" name="tgl">
+                              <input type="datetime-local" id="tanggal" class="form-control" placeholder="Tanggal" name="tgl" onchange="setBatasWaktu()" required>
                             </div>
                           </div>
                           <div class="col-md-6 col-12">
@@ -141,7 +146,7 @@ if (isset($_POST['simpan'])) {
                             <div class="form-group">
                               <label for="user">Pilih Kasir</label>
                               <div class="form-group">
-                                <select class="form-select" id="nama_pelanggan" name="kasir">
+                                <select class="form-select" name="kasir">
                                   <?php foreach ($dataKasir as $kasir) { ?>
                                     <option value="<?= $kasir['id'] ?>"><?= $kasir['nama'] ?></option>
                                   <?php } ?>
@@ -149,47 +154,37 @@ if (isset($_POST['simpan'])) {
                               </div>
                             </div>
                           </div>
-                          <div class="col-12">
+                          <div class="col-md-6 col-12">
                             <div class="form-group">
-                              <label for="">
-                                <h6>Paket yang dipesan</h6>
-                              </label>
-                              <div class="table-responsive">
-                                <table class="table table-bordered mb-0">
-                                  <thead>
-                                    <tr>
-                                      <th>No</th>
-                                      <th>Nama Paket</th>
-                                      <th>Jenis</th>
-                                      <th>Harga</th>
-                                      <th>Berat(Kg)</th>
-                                      <th>Keterangan</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <?php $i = 0; ?>
-                                    <?php foreach ($dataPaket as $paket) : ?>
-                                      <?php $i++; ?>
-                                      <tr>
-                                        <td><?= $i; ?></td>
-                                        <td><?= $paket['nama_paket']; ?></td>
-                                        <td><?= $paket['jenis']; ?></td>
-                                        <td><?= $paket['harga']; ?></td>
-                                        <td>
-                                          <input type="number" value="0" name="qty<?= $paket['id'] ?>" id="qty<?= $paket['id'] ?>" class="form-control" onkeyup="hitung()">
-                                        </td>
-                                        <td><input type="text" name="keterangan<?= $paket['id'] ?>" id="" value=" " class="form-control"></td>
-                                      </tr>
-                                    <?php endforeach ?>
-                                  </tbody>
-                                </table>
+                              <label>Layanan Antar</label>
+                              <div class="form-group">
+                                <select class="form-select" id="layananAntar" name="layanan_antar" onchange="hitung()">
+                                  <?php
+                                  $queryLayanan = "SELECT * FROM tb_layanan WHERE layanan = 'antar'";
+                                  $execLayanan = mysqli_query($conn, $queryLayanan);
+                                  $dataLayanan = mysqli_fetch_assoc($execLayanan);
+                                  ?>
+                                  <option value="0">TIDAK</option>
+                                  <option value="<?= $dataLayanan['harga'] ?>">YA</option>
+                                </select>
                               </div>
                             </div>
                           </div>
                           <div class="col-md-6 col-12">
                             <div class="form-group">
-                              <label for="user">Total Harga</label>
-                              <input class="form-control" type="text" name="harga" id="hasil_paket_akhir" onkeyup="hitung()" readonly="">
+                              <label>Layanan Jemput</label>
+                              <div class=" form-group">
+                                <select class="form-select" id="layananJemput" name="layanan_jemput" onchange="hitung()">
+                                  <?php
+                                  // data layanan
+                                  $queryLayananJ = "SELECT * FROM tb_layanan WHERE layanan = 'jemput'";
+                                  $execLayananJ = mysqli_query($conn, $queryLayananJ);
+                                  $dataLayananJ = mysqli_fetch_assoc($execLayananJ);
+                                  ?>
+                                  <option value="0">TIDAK</option>
+                                  <option value="<?= $dataLayananJ['harga'] ?>">YA</option>
+                                </select>
+                              </div>
                             </div>
                           </div>
                           <input type="text" name="random" id="" class="visually-hidden" value="<?= $random; ?>">
@@ -212,27 +207,20 @@ if (isset($_POST['simpan'])) {
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
   <script>
-    function hitung() {
-      var tampil = document.getElementById('hasil_paket_akhir');
-      <?php $b = 0 ?>
-      var harga = [];
-      <?php foreach ($semuaHarga as $harga) { ?>
-        harga[<?= $b ?>] = <?= $harga ?>;
-        <?php $b++ ?>
-      <?php } ?>
-      <?php $s = 0 ?>
-      var totalHarga = 0;
-      <?php foreach ($dataPaket as $paket) : ?>
-        <?php $idKetPa = $paket['id'] ?>
-        var inputan = document.getElementById('qty' + '<?= $idKetPa ?>').value
-        if (inputan > 0) {
-          totalHarga += (parseInt(inputan) * parseInt(harga[<?= $s ?>]));
-        }
-        <?php $s++ ?>
-      <?php endforeach ?>
-      tampil.value = totalHarga
-      console.log(harga);
-    }
+  function setBatasWaktu() {
+    var tanggalTransaksi = document.getElementById('tanggal').value;
+    var tanggal = new Date(tanggalTransaksi);
+    tanggal.setDate(tanggal.getDate() + 3); // Tambah 3 hari
+
+    var tahun = tanggal.getFullYear();
+    var bulan = (tanggal.getMonth() + 1).toString().padStart(2, '0');
+    var hari = tanggal.getDate().toString().padStart(2, '0');
+    var jam = tanggal.getHours().toString().padStart(2, '0');
+    var menit = tanggal.getMinutes().toString().padStart(2, '0');
+
+    var batasWaktu = `${tahun}-${bulan}-${hari}T${jam}:${menit}`;
+    document.getElementById('batas').value = batasWaktu;
+  }
   </script>
 </body>
 </html>

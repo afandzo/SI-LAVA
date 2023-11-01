@@ -38,17 +38,17 @@
                   <h6>Masukkan Tanggal</h6>
                 </label>
                 <div>
-                  <input type="datetime-local" class="form-control" name="tgl" value="<?= $dataTransaksi['tgl'] ?>">
+                  <input type="datetime-local" id="update_tanggal" class="form-control" placeholder="Tanggal" name="tgl" onchange="setBatasWaktu()" required value="<?= $dataTransaksi['tgl'] ?>">
                 </div>
               </div>
             </div>
             <div class="col-md-6 col-12">
               <div class="form-group">
                 <label for="">
-                  <h6>Batas Waktu Pembayaran</h6>
+                  <h6>Batas Waktu</h6>
                 </label>
                 <div>
-                  <input type="datetime-local" class="form-control" name="batastgl" value="<?= $dataTransaksi['batas_waktu'] ?>">
+                  <input type="datetime-local" id="update_batas" class="form-control" placeholder="Batas Waktu" name="btstgl" onchange="hitung()" value="<?= $dataTransaksi['batas_waktu'] ?>">
                 </div>
               </div>
             </div>
@@ -90,6 +90,52 @@
                 </fieldset>
               </div>
             </div>
+            <div class="col-md-6 col-12">
+              <div class="form-group">
+                <label>Layanan Antar</label>
+                <div class="form-group">
+                  <select class="form-select" id="update_layananAntar" name="layanan_antar" onchange="hitung()">
+                    <option value="0" <?= ($dataTransaksi['layanan_antar'] == 0) ? 'selected' : ''; ?>>TIDAK</option>
+                    <option value="<?= $dataLayanan['harga'] ?>" <?= (!empty($dataTransaksi['layanan_antar'])) ? 'selected' : ''; ?>>YA</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-12">
+              <div class="form-group">
+                <label>Layanan Jemput</label>
+                <div class=" form-group">
+                  <select class="form-select" id="update_layananJemput" name="layanan_jemput" onchange="hitung()">
+                    <option value="0" <?= ($dataTransaksi['layanan_jemput'] == 0) ? 'selected' : ''; ?>>TIDAK</option>
+                    <option value="<?= $dataLayananJ['harga'] ?>" <?= (!empty($dataTransaksi['layanan_jemput'])) ? 'selected' : ''; ?>>YA</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-12">
+              <div class="form-group">
+                <label>Status Antar</label>
+                <div class="form-group">
+                  <select class="form-select" id="update_statusAntar" name="status_antar">
+                    <option value="blm_diantar" <?= ($dataTransaksi['layanan_antar'] == 0 && $dataTransaksi['status_antar'] == 'blm_diantar') ? 'selected' : ''; ?>>Blm Diantar</option>
+                    <option value="diantar" <?= (!empty($dataTransaksi['layanan_antar']) && $dataTransaksi['status_antar'] == 'diantar') ? 'selected' : ''; ?>>Diantar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-12">
+              <div class="form-group">
+                <label>Status Jemput</label>
+                <div class=" form-group">
+                  <select class="form-select" id="update_statusJemput" name="status_jemput">
+                    <option value="blm_dijemput" <?= ($dataTransaksi['layanan_jemput'] == 0 && $dataTransaksi['status_jemput'] == 'blm_dijemput') ? 'selected' : ''; ?>>Blm Dijemput</option>
+                    <option value="dijemput" <?= (!empty($dataTransaksi['layanan_jemput']) && $dataTransaksi['status_jemput'] == 'dijemput') ? 'selected' : ''; ?>>Dijemput</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <!-- Daftar Paket dan form paket -->
             <div class="mt-lg-2">
               <label for="">
@@ -124,7 +170,7 @@
                             $value += $detail['qty'];
                           } ?>
                         <?php endforeach ?>
-                        <input type="text" value="<?= $value ?>" class="form-control" name="qty<?= $paket['id'] ?>">
+                        <input type="number" value="<?= $value ?>" class="form-control" name="qty<?= $paket['id'] ?>" id="update_qty<?= $paket['id'] ?>" onchange="hitung()">
                       </td>
                       <td>
                         <?php $keterangan = ""; ?>
@@ -139,6 +185,12 @@
                   <?php endforeach ?>
                 </tbody>
               </table>
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="user">Total Harga</label>
+                  <input class="form-control" type="text" name="total_harga" id="update_hasil_paket_akhir" onkeyup="hitung()" readonly="" value="<?= $dataTransaksi['total_harga'] ?>">
+                </div>
+              </div>
             </div>
             <button type="submit" class="ms-3 btn btn-primary float-end col-2 mt-10" name="simpan">Simpan</button>
           </div>

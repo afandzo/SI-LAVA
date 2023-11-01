@@ -30,8 +30,9 @@ $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../assets/css/main/app.css">
@@ -46,6 +47,7 @@ $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
     }
   </style>
 </head>
+
 <body onload="window.print();">
   <div class="container-fluid">
     <div class="card">
@@ -71,31 +73,22 @@ $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
                   <tr>
                     <td>No Invoice</td>
                     <td>: <?= $kode ?> </td>
-                    <input type="hidden" name="kode_invoice" id="kode_invoice" value="<?= $kode ?>">
-                  </tr>
-                  <tr>
-                    <td>Tanggal Transaksi</td>
-                    <td>: <?= $dataTransaksi['tgl'] ?></td>
                   </tr>
                   <tr>
                     <td>Pelanggan</td>
                     <td>: <?= $dataPelanggan['nama'] ?></td>
                   </tr>
                   <tr>
-                    <td>No Telp</td>
+                    <td>Username</td>
+                    <td>: <?= $dataPelanggan['username'] ?></td>
+                  </tr>
+                  <tr>
+                    <td>No. Telp</td>
                     <td>: <?= $dataPelanggan['tlp'] ?></td>
                   </tr>
                   <tr>
-                    <td>Alamat</td>
+                    <td>Pelanggan</td>
                     <td>: <?= $dataPelanggan['alamat'] ?></td>
-                  </tr>
-                  <tr>
-                    <td>Pembayaran</td>
-                    <td>: <?= $dataTransaksi['dibayar'] ?></td>
-                  </tr>
-                  <tr>
-                    <td>Status</td>
-                    <td>: <?= $dataTransaksi['status'] ?></td>
                   </tr>
                   <tr>
                     <td>Kasir</td>
@@ -114,18 +107,50 @@ $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
               </table>
             </div>
           </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <td>Tanggal Transaksi</td>
+                    <td>: <?= $dataTransaksi['tgl'] ?></td>
+                  </tr>
+                  <tr>
+                    <td>Batas Tanggal</td>
+                    <td>: <?= $dataTransaksi['batas_waktu'] ?></td>
+                  </tr>
+                  <tr>
+                    <td>Status Bayar</td>
+                    <td>: <?= $dataTransaksi['dibayar'] ?></td>
+                  </tr>
+                  <tr>
+                    <td>Status Paket</td>
+                    <td>: <?= $dataTransaksi['status'] ?></td>
+                  </tr>
+                  <tr>
+                    <td>Layanan Antar</td>
+                    <td>: <?= $dataTransaksi['layanan_antar'] ?></td>
+                  </tr>
+                  <tr>
+                    <td>Layanan Jemput</td>
+                    <td>: <?= $dataTransaksi['layanan_jemput'] ?></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
         <div>
           <div class="col-sm-12">
             <table class="table table-bordered">
               <thead class="text-center">
                 <tr>
-                  <th rowspan="2">No</th>
-                  <th rowspan="2">Nama Paket</th>
-                  <th rowspan="2">Jenis Paket</th>
-                  <th rowspan="2">Tarif</th>
-                  <th rowspan="2">Berat</th>
-                  <th rowspan="2">Total Biaya</th>
+                  <th>No</th>
+                  <th>Nama Paket</th>
+                  <th>Jenis Paket</th>
+                  <th>Tarif</th>
+                  <th>Berat</th>
+                  <th>Total Biaya</th>
                 </tr>
               </thead>
               <tbody class="text-center">
@@ -154,28 +179,7 @@ $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
               </tbody>
             </table><br>
             <span class="text-right">
-              <?php
-              $idTransaksi = $_GET['idtransaksi'];
-              $queryAmbil = "SELECT * FROM tb_detail_transaksi WHERE id_transaksi = $idTransaksi";
-              $execAmbil = mysqli_query($conn, $queryAmbil);
-              $dataAmbil = mysqli_fetch_all($execAmbil, MYSQLI_ASSOC);
-              $total = [];
-              foreach ($dataAmbil as $ambil) {
-                $qty = $ambil['qty'];
-                $idPaket = $ambil['id_paket'];
-                $queryHarga = "SELECT * FROM tb_paket WHERE id = $idPaket";
-                $execHarga = mysqli_query($conn, $queryHarga);
-                $dataHarga = mysqli_fetch_assoc($execHarga);
-                $total[] += $dataHarga['harga'] * $qty;
-              }
-              $jumlah = count($total);
-              $hargaA = "0";
-              $hargaA;
-              for ($i = 0; $i < $jumlah; $i++) {
-                $hargaA += $total[$i];
-              }
-              ?>
-              <h3>Total Bayar : Rp. <?= $hargaA ?></h3>
+              <h3>Total Bayar : Rp. <?= $dataTransaksi['total_harga'] ?></h3>
             </span>
           </div>
         </div>
@@ -185,4 +189,5 @@ $dataPaket = mysqli_fetch_all($execPaket, MYSQLI_ASSOC);
   <script src="../assets/js/bootstrap.js"></script>
   <script src="../assets/js/app.js"></script>
 </body>
+
 </html>

@@ -5,8 +5,9 @@ if (empty($_SESSION['loginkasir'])) {
   header("Location: ../index.php");
 }
 $page = "riwayat_transaksi";
+$id_kasir = $_SESSION['id'];
 //ambil data transaksi
-$queryTransaksi = "SELECT * FROM tb_transaksi ORDER BY id DESC";
+$queryTransaksi = "SELECT * FROM tb_transaksi WHERE id_user = $id_kasir ORDER BY id DESC";
 $execTransaksi = mysqli_query($conn, $queryTransaksi);
 $dataTransaksi = mysqli_fetch_all($execTransaksi, MYSQLI_ASSOC);
 //ambil data detail transaksi
@@ -58,8 +59,10 @@ if (isset($_POST['hps'])) {
                             <th>Kode Invoice</th>
                             <th>Pelanggan</th>
                             <th>Total Biaya</th>
-                            <th>Status</th>
                             <th>Pembayaran</th>
+                            <th>Status</th>
+                            <th>Antar</th>
+                            <th>Jemput</th>
                             <th>Aksi</th>
                           </tr>
                         </thead>
@@ -80,9 +83,22 @@ if (isset($_POST['hps'])) {
                               $statusBadge  = "badge bg-primary";
                             } if ($transaksi['status'] == 'diambil') {
                               $statusBadge  = "badge bg-success";
+                            } if ($transaksi['status_antar'] == 'blm_diantar') {
+                              $antarBadge  = "badge bg-danger";
+                            } if ($transaksi['status_antar'] == 'diantar') {
+                              $antarBadge  = "badge bg-success";
+                            } if ($transaksi['status_antar'] == '') {
+                              $antarBadge  = "badge bg-secondary";
+                            } if ($transaksi['status_jemput'] == 'blm_dijemput') {
+                              $jemputBadge  = "badge bg-danger";
+                            } if ($transaksi['status_jemput'] == 'dijemput') {
+                              $jemputBadge  = "badge bg-success";
+                            } if ($transaksi['status_jemput'] == '') {
+                              $jemputBadge  = "badge bg-secondary";
                             }
+
                             if ($transaksi['dibayar'] == 'belum_dibayar') {
-                              $bayar = "Belum Dibayar";
+                              $bayar = "Blm Dibayar";
                             } if ($transaksi['dibayar'] == 'dibayar') {
                               $bayar  = "Dibayar";
                             } if ($transaksi['status'] == 'baru') {
@@ -93,6 +109,18 @@ if (isset($_POST['hps'])) {
                               $status  = "Selesai";
                             } if ($transaksi['status'] == 'diambil') {
                               $status  = "Diambil";
+                            } if ($transaksi['status_antar'] == 'blm_diantar') {
+                              $antar  = "Blm Antar";
+                            } if ($transaksi['status_antar'] == 'diantar') {
+                              $antar  = "Diantar";
+                            } if ($transaksi['status_antar'] == '') {
+                              $antar  = "-";
+                            } if ($transaksi['status_jemput'] == 'blm_dijemput') {
+                              $jemput  = "Blm Jemput";
+                            } if ($transaksi['status_jemput'] == 'dijemput') {
+                              $jemput  = "DiJemput";
+                            } if ($transaksi['status_jemput'] == '') {
+                              $jemput  = "-";
                             }
                             ?>
                             <tr>
@@ -109,37 +137,15 @@ if (isset($_POST['hps'])) {
                                 <?= $namaPelanggan ?>
                               </td>
                               <td>
-                                <?php
-                                $idTransaksi = $transaksi['id'];
-                                $queryAmbil = "SELECT * FROM tb_detail_transaksi WHERE id_transaksi = $idTransaksi";
-                                $execAmbil = mysqli_query($conn, $queryAmbil);
-                                $dataAmbil = mysqli_fetch_all($execAmbil, MYSQLI_ASSOC);
-                                $total = [];
-                                foreach ($dataAmbil as $ambil) {
-                                  $qty = $ambil['qty'];
-                                  $idPaket = $ambil['id_paket'];
-                                  $queryHarga = "SELECT * FROM tb_paket WHERE id = $idPaket";
-                                  $execHarga = mysqli_query($conn, $queryHarga);
-                                  $dataHarga = mysqli_fetch_assoc($execHarga);
-                                  $total[] += $dataHarga['harga'] * $qty;
-                                }
-                                $jumlah = count($total);
-                                $hargaA = "0";
-                                $hargaA;
-                                for ($i = 0; $i < $jumlah; $i++) {
-                                  $hargaA += $total[$i];
-                                }
-                                ?>
-                                <?= $hargaA ?>
+                                <?= $transaksi['total_harga'] ?>
                               </td>
                               <td><span class="<?= $bayarBadge ?>"><?= $bayar ?></span></td>
                               <td><span class="<?= $statusBadge ?>"><?= $status ?></span></td>
+                              <td><span class="<?= $antarBadge ?>"><?= $antar ?></span></td>
+                              <td><span class="<?= $jemputBadge ?>"><?= $jemput ?></span></td>
                               <td>
-                                <a href="detail.php?idtransaksi=<?= $transaksi['id'] ?>&kode=<?= $transaksi['kode_invoice'] ?>" class="btn icon icon-left btn-primary" type="button">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                  </svg></a>
+                                <a href="detail.php?idtransaksi=<?= $transaksi['id'] ?>&kode=<?= $transaksi['kode_invoice'] ?>" class="btn icon icon-left btn-primary " type="button">
+                                <i class="bi bi-pencil-square"></i></a>
                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#defaultSize<?= $transaksi['id'] ?>">
                                   <i class="bi bi-trash"></i>
                                 </button>
